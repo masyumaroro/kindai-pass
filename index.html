@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#F5F6F8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="KINDAI PASS（通院支援アプリ アイデアコンテスト2026 提案）の試作品">
+
+<title>KINDAI PASS 試作品</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
+<style>
+/* Layout: on a computer, the phone mockup sits left and a presenter panel right. On a phone, the app itself fills the screen and a small menu holds the demo controls. */
+:root{
+  --page:#E8ECF3; --panel:#FFFFFF; --ink:#14213D; --muted:#56627A; --line:#D5DCE8;
+  --accent:#1D4E9E; --accent-ink:#FFFFFF; --accent-soft:#E2E9F5; --bezel:#121A2B; --focus:#E0A100;
+  /* The app screen keeps the product's own light look in both themes */
+  --app-bg:#F5F6F8; --app-card:#FCFCFD; --app-ink:#14213D; --app-muted:#5B6578; --app-line:#DCE2EC;
+  --app-accent:#1D4E9E; --app-soft:#EAEFF7; --app-ok-bg:#E6F2EA; --app-ok:#1F6B3D;
+  --app-warn-bg:#FCEFD6; --app-warn:#8A5300; --app-scrim:rgba(20,33,61,.38);
+  --font:"Noto Sans JP","Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --page:#0D1421; --panel:#152035; --ink:#E7ECF5; --muted:#9BA8BF; --line:#2A3752;
+    --accent:#8DAEEB; --accent-ink:#0D1421; --accent-soft:#1D2B47; --bezel:#03060C; --focus:#F2C14E;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --page:#0D1421; --panel:#152035; --ink:#E7ECF5; --muted:#9BA8BF; --line:#2A3752;
+  --accent:#8DAEEB; --accent-ink:#0D1421; --accent-soft:#1D2B47; --bezel:#03060C; --focus:#F2C14E;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--page);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.6;font-feature-settings:"palt";-webkit-tap-highlight-color:transparent}
+button{font:inherit;cursor:pointer;touch-action:manipulation}
+button:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+.wrap{max-width:1080px;margin:0 auto;padding-block:32px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;grid-template-columns:auto minmax(0,1fr);gap:48px;align-items:start}
+@media (max-width:860px){.wrap{grid-template-columns:minmax(0,1fr);gap:28px}.stage{justify-self:center}}
+
+/* ---------- Phone ---------- */
+.stage{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px)}
+@media (max-width:860px){.stage{position:static}}
+.phone{width:372px;max-width:100%;aspect-ratio:372/770;background:var(--bezel);border-radius:52px;padding:12px;box-shadow:0 24px 60px rgba(13,20,33,.28)}
+.screen{position:relative;height:100%;border-radius:41px;overflow:hidden;background:var(--app-bg);color:var(--app-ink);display:flex;flex-direction:column}
+.sbar{display:flex;justify-content:space-between;align-items:center;padding:14px 28px 4px;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
+.sbar .notch{width:96px;height:26px;border-radius:14px;background:var(--bezel)}
+.sbar .batt{font-size:12px;font-weight:500;color:var(--app-muted)}
+.appbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 24px 0;min-height:30px}
+.brand{font-size:13px;font-weight:900;letter-spacing:.14em;color:var(--app-accent)}
+.today{font-size:12px;color:var(--app-muted)}
+.menu-btn{display:none;align-items:center;gap:6px;border:1px solid var(--app-line);background:var(--app-card);color:var(--app-accent);border-radius:999px;padding:5px 12px 5px 10px;font-size:12.5px;font-weight:700}
+.menu-btn svg{width:15px;height:15px}
+.main{flex:1;display:flex;flex-direction:column;gap:6px;padding:22px 24px 26px;min-height:0}
+.main.enter{animation:enter .38s ease-out}
+@keyframes enter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.statusline{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--app-muted);margin-bottom:10px}
+.statusline svg{width:20px;height:20px;flex:none}
+.statusline.ok svg{color:var(--app-accent)}
+.statusline.warn{color:var(--app-warn);font-weight:700}
+.statusline.warn svg{color:var(--app-warn)}
+.kicker{font-size:14px;color:var(--app-muted)}
+.dest{font-size:31px;font-weight:900;line-height:1.28;text-wrap:balance;letter-spacing:.01em}
+.dest em{font-style:normal;color:var(--app-accent);font-variant-numeric:tabular-nums}
+.sub{font-size:15px;color:var(--app-muted);margin-top:4px}
+.grow{flex:1}
+.card{background:var(--app-soft);border-radius:14px;padding:13px 16px;display:flex;flex-direction:column;gap:2px;margin-bottom:12px}
+.card .l{font-size:13px;color:var(--app-muted)}
+.card .v{font-size:16px;font-weight:700}
+.card.ok{background:var(--app-ok-bg)}.card.ok .l,.card.ok .v{color:var(--app-ok)}
+.card.warn{background:var(--app-warn-bg)}.card.warn .l,.card.warn .v{color:var(--app-warn)}
+.cta{border:0;border-radius:14px;background:var(--app-accent);color:#FFFFFF;font-size:18px;font-weight:700;padding:16px;width:100%}
+.cta:active{transform:scale(.985)}
+
+/* banner (push notification) */
+.banner{position:absolute;left:10px;right:10px;top:46px;z-index:5;background:var(--app-card);border-radius:18px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 10px 30px rgba(20,33,61,.22);transform:translateY(-160%);transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+.banner.show{transform:none}
+.banner .ic{width:34px;height:34px;border-radius:9px;background:var(--app-accent);color:#FFFFFF;display:grid;place-items:center;flex:none}
+.banner .ic svg{width:18px;height:18px}
+.banner .t{font-size:13px;font-weight:700}
+.banner .b{font-size:13px;color:var(--app-muted);line-height:1.45}
+.banner .app{font-size:11px;color:var(--app-muted);letter-spacing:.08em}
+
+/* bottom sheet */
+.scrim{position:absolute;inset:0;background:var(--app-scrim);opacity:0;pointer-events:none;transition:opacity .25s;z-index:6}
+.scrim.show{opacity:1;pointer-events:auto}
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:7;background:var(--app-card);border-radius:26px 26px 0 0;padding:10px 22px 24px;transform:translateY(105%);transition:transform .32s cubic-bezier(.2,.8,.2,1);max-height:86%;display:flex;flex-direction:column;gap:12px}
+.sheet.show{transform:none}
+.sheet .grip{width:40px;height:5px;border-radius:3px;background:var(--app-line);align-self:center}
+.sheet h3{font-size:19px;font-weight:900;margin:0}
+.sheet .body{overflow-y:auto;min-height:0;display:flex;flex-direction:column;gap:12px;-webkit-overflow-scrolling:touch}
+.sheet .acts{display:flex;flex-direction:column;gap:8px}
+.route{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.route li{display:grid;grid-template-columns:28px 1fr;gap:12px;position:relative;padding-bottom:16px}
+.route li:last-child{padding-bottom:0}
+.route li::before{content:"";position:absolute;left:13px;top:28px;bottom:2px;width:2px;background:var(--app-line)}
+.route li:last-child::before{display:none}
+.route .n{width:28px;height:28px;border-radius:50%;background:var(--app-soft);color:var(--app-accent);font-weight:900;font-size:14px;display:grid;place-items:center}
+.route li.now .n{background:var(--app-accent);color:#FFFFFF}
+.route .tx{font-size:16px;font-weight:700;padding-top:2px}
+.route .tx small{display:block;font-size:13px;font-weight:400;color:var(--app-muted)}
+.items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.items li{background:var(--app-bg);border:1px solid var(--app-line);border-radius:12px;padding:11px 14px;display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.items li b{font-size:15px}
+.items li span{font-size:13px;color:var(--app-muted);white-space:nowrap}
+.items.q li{display:block}
+.items.q li b{display:block;font-weight:700;line-height:1.5}
+.note{font-size:12.5px;color:var(--app-muted);line-height:1.6;background:var(--app-soft);border-radius:10px;padding:10px 12px}
+.sum h4{font-size:13px;color:var(--app-accent);margin:0 0 2px;letter-spacing:.04em}
+.sum p{margin:0;font-size:15px;line-height:1.6}
+.sec-btn{border:1px solid var(--app-line);background:var(--app-card);color:var(--app-accent);font-weight:700;border-radius:14px;padding:13px;width:100%;font-size:15px}
+.warn-btn{border:1.5px solid var(--app-warn);background:var(--app-warn-bg);color:var(--app-warn);font-weight:700;border-radius:14px;padding:12px;width:100%;font-size:15px}
+.sheet .cta{font-size:17px;padding:14px}
+.lbl{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--app-muted);margin:0}
+.how-m{margin:0;font-size:14.5px;line-height:1.7}
+.chips-m{display:flex;flex-wrap:wrap;gap:6px}
+.chips-m span{font-size:12px;border:1px solid var(--app-line);border-radius:999px;padding:2px 10px;color:var(--app-muted)}
+.chips-m span.step{background:var(--app-accent);border-color:var(--app-accent);color:#FFFFFF;font-weight:700}
+.jump{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.jump button{width:100%;text-align:left;border:1px solid var(--app-line);background:var(--app-bg);color:var(--app-ink);border-radius:10px;padding:8px 10px;font-size:13.5px;display:flex;gap:8px;align-items:center}
+.jump button b{width:20px;height:20px;border-radius:50%;background:var(--app-soft);color:var(--app-accent);font-size:11.5px;display:grid;place-items:center;flex:none}
+.jump button[aria-current="step"]{border-color:var(--app-accent);font-weight:700}
+.jump button[aria-current="step"] b{background:var(--app-accent);color:#FFFFFF}
+.welcome-lead{margin:0;font-size:15px;line-height:1.75}
+.welcome-steps{margin:0;padding-left:1.3em;font-size:14.5px;line-height:1.8}
+
+/* ---------- Presenter panel ---------- */
+.panel{display:flex;flex-direction:column;gap:24px;min-width:0}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.18em;color:var(--accent)}
+h1{font-size:clamp(28px,4vw,40px);font-weight:900;line-height:1.2;margin:4px 0 10px;text-wrap:balance}
+.lead{margin:0;color:var(--muted);max-width:34em}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px 22px}
+.flow{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.flow button{width:100%;display:grid;grid-template-columns:28px 52px 1fr;gap:10px;align-items:center;text-align:left;background:transparent;border:0;border-radius:10px;padding:8px 10px;color:var(--ink)}
+.flow button:hover{background:var(--accent-soft)}
+.flow .no{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:13px;font-weight:700;color:var(--muted)}
+.flow .tm{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.flow .lb{font-weight:500}
+.flow button.done .no{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
+.flow button[aria-current="step"]{background:var(--accent-soft)}
+.flow button[aria-current="step"] .no{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.flow button[aria-current="step"] .lb{font-weight:700}
+.ctrls{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:12px;padding:11px 18px;font-weight:700}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);flex:1;min-width:160px}
+.btn.event{border-color:var(--focus);color:var(--ink);background:transparent}
+.btn:disabled{opacity:.4;cursor:default}
+.how h2{font-size:13px;font-weight:700;letter-spacing:.12em;color:var(--muted);margin:0 0 8px}
+.how p{margin:0 0 14px;font-size:16px;line-height:1.75}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:12.5px;border:1px solid var(--line);border-radius:999px;padding:4px 12px;color:var(--muted)}
+.chip.step{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.rule{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;text-align:center}
+.rule div{background:var(--accent-soft);border-radius:12px;padding:12px 6px}
+.rule b{display:block;font-size:22px;font-weight:900;color:var(--accent)}
+.rule span{font-size:12.5px;color:var(--muted)}
+.fine{font-size:12.5px;color:var(--muted);margin:0;line-height:1.7}
+kbd{font-family:var(--font);font-size:11px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px}
+
+/* ---------- On a phone: the app fills the screen ---------- */
+@media (max-width:600px){
+  html,body{height:100%}
+  body{background:var(--app-bg);overscroll-behavior:none}
+  .wrap{display:block;height:100%;max-width:none;padding-block:0;padding-left:0;padding-right:0}
+  .stage{position:static;height:100%;width:100%;justify-self:stretch}
+  .phone{width:100%;height:100%;aspect-ratio:auto;border-radius:0;padding:0;box-shadow:none;background:var(--app-bg)}
+  .screen{border-radius:0}
+  .sbar,.panel,.today{display:none}
+  .menu-btn{display:inline-flex}
+  .appbar{padding-top:14px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+  .main{padding-top:24px;padding-bottom:20px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+  .dest{font-size:clamp(28px,8.6vw,36px)}
+  .banner{top:10px}
+  .sheet{padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .main.enter{animation:none}
+  .banner,.sheet,.scrim{transition:none}
+}
+</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+@media (max-width:600px){
+  .appbar{padding-top:calc(14px + env(safe-area-inset-top,0px))!important}
+  .main{padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))!important}
+  .banner{top:calc(10px + env(safe-area-inset-top,0px))!important}
+  .sheet{padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))!important}
+}
+@media (min-width:601px){body{padding-block:env(safe-area-inset-top,0px) env(safe-area-inset-bottom,0px)}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <div class="stage">
+    <div class="phone" aria-label="KINDAI PASS の画面">
+      <div class="screen" id="screen">
+        <div class="sbar"><span id="clock">9:20</span><span class="notch" aria-hidden="true"></span><span class="batt">5G ▮▮▮</span></div>
+        <div class="appbar">
+          <span class="brand">KINDAI PASS</span>
+          <span class="today">本日の通院</span>
+          <button class="menu-btn" id="menuBtn" type="button" aria-label="試作品のメニューを開く"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>試作品メニュー</button>
+        </div>
+        <div class="main" id="main" aria-live="polite"></div>
+
+        <div class="banner" id="banner" role="status">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></div>
+          <div><div class="app">KINDAI PASS ・ いま</div><div class="t" id="bannerT"></div><div class="b" id="bannerB"></div></div>
+        </div>
+
+        <div class="scrim" id="scrim"></div>
+        <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+          <div class="grip" aria-hidden="true"></div>
+          <h3 id="sheetTitle"></h3>
+          <div class="body" id="sheetBody"></div>
+          <div class="acts" id="sheetActions"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div>
+      <div class="eyebrow">通院支援アプリ アイデアコンテスト2026 ｜ 試作品</div>
+      <h1>KINDAI PASS</h1>
+      <p class="lead">受付から帰宅後まで、画面に出るのは「次にすること」一つだけ。場面を進めると、患者が見る画面がどう移り変わるかを確かめられます。画面のボタンも押せます。スマートフォンで開くと、アプリの画面だけが全画面で表示されます。</p>
+    </div>
+
+    <div class="box">
+      <ol class="flow" id="flow"></ol>
+      <div class="ctrls">
+        <button class="btn" id="prev" type="button">前へ</button>
+        <button class="btn primary" id="next" type="button">次の場面へ</button>
+        <button class="btn event" id="event" type="button" hidden>順番が早まったら？</button>
+      </div>
+    </div>
+
+    <div class="box how">
+      <h2>この画面のしくみ</h2>
+      <p id="howText"></p>
+      <div class="chips" id="howChips"></div>
+    </div>
+
+    <div class="box">
+      <div class="how"><h2>どの画面も同じ形</h2></div>
+      <div class="rule">
+        <div><b>1つ</b><span>行き先</span></div>
+        <div><b>1つ</b><span>判断に使う数字</span></div>
+        <div><b>1つ</b><span>ボタン</span></div>
+      </div>
+    </div>
+
+    <p class="fine">画面に出てくる場所・時刻・番号・診察の内容は、説明のための架空の例です。実際の病院の案内とは異なります。<br><kbd>←</kbd> <kbd>→</kbd> キーで場面を移動できます。</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  const ICON_OK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="m7.5 12.3 3 3 6-6.3"/></svg>';
+  const ICON_INFO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v5.5M12 7.6v.1"/></svg>';
+  const ICON_WARN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 2.8 19.5h18.4Z"/><path d="M12 10v4.5M12 17.3v.1"/></svg>';
+
+  const scenes=[
+    {nav:'どこでも受付',time:'9:20',status:['info','本日、内科の予約があります'],
+     dest:'受付を済ませる',sub:'病院の外からでも受付できます',
+     card:{l:'本日の予定',v:'10:00 採血 ／ 11:00 内科'},
+     cta:{label:'受付する',act:'next'},
+     how:'どこでも受付を押した時点から、この先の案内がすべて動き出します。便利さの入口が受付なので、受付を押す理由が自然に生まれます。',
+     data:['予約'],step:'STEP 1'},
+    {nav:'受付直後',time:'9:31',status:['ok','受付が完了しました'],
+     banner:['受付が完了しました','病院に着いたら、3階 総合受付へお進みください'],
+     dest:'3階 総合受付へ',sub:'保険証の確認をお願いします',
+     card:{l:'本日の予定',v:'10:00 採血 ／ 11:00 内科'},
+     cta:{label:'案内を開始',sheet:'route1'},
+     how:'受付が済むと、院内の案内がすぐ始まります。到着してから「どこへ行けば」と迷わせません。',
+     data:['受付状況','予約'],step:'STEP 1・3'},
+    {nav:'検査へ',time:'9:48',status:['ok','保険証の確認が終わりました'],
+     dest:'2階 採血室へ',sub:'10:00 の採血 ／ 徒歩3分',
+     card:{l:'このあと',v:'採血 → 11:00 内科'},
+     cta:{label:'案内を開始',sheet:'route2'},
+     how:'検査と診察が重なる日は、どちらを先に済ませるかを生成AIが判断し、一つだけ示します。患者がAIと会話する必要はありません。',
+     data:['予約','受付状況','各待ち状況'],step:'STEP 1・2'},
+    {nav:'待ち時間',time:'10:12',status:['ok','採血が終わりました'],
+     dest:'<em>10:45</em>までに<br>2階 内科へ戻る',sub:'徒歩4分 ／ 待ち時間の目安 約35分',
+     card:{l:'いま院内で立ち寄れる場所',v:'1階 カフェ（徒歩3分）'},
+     cafeCard:{l:'いまいる場所',v:'1階 カフェ（呼ばれたら通知します）'},
+     cta:{label:'寄れる場所を見る',sheet:'places'},
+     how:'「あと35分」ではなく「10:45に戻る」と時刻で示します。減っていく数字を見張らずに済みます。予測は安全側に丸めています。',
+     data:['待ち時間予測'],step:'STEP 2',
+     early:{time:'10:18',status:['warn','順番が早まりました'],
+       banner:['順番が早まりました','10:30までに 2階 内科へお戻りください'],
+       dest:'<em>10:30</em>までに<br>2階 内科へ戻る',sub:'徒歩4分 ／ いまいる場所から案内します',
+       card:{l:'立ち寄りの提案を止めました',v:'診察が近づいています',tone:'warn'},
+       cta:{label:'戻る道を案内',sheet:'routeBack'},
+       how:'順番が早まると、すぐに通知で呼び戻し、立ち寄りの提案を止めます。「間に合います」とは言い切らず、戻る時刻だけを示します。'}},
+    {nav:'呼び出し',time:'10:41',status:['info','お呼びしています'],
+     banner:['お呼びしています','2階 内科 3番診察室へお入りください'],
+     dest:'2階 内科<br>3番診察室へ',sub:'診察番号 128',
+     card:{l:'先生に確認すること',v:'2件 ・ 朝に話した内容から整理'},
+     cta:{label:'確認することを見る',sheet:'questions'},
+     how:'呼び出しは今のアプリにある情報です。「確認すること」は、診察前に声で話した内容を生成AIが整理したもので、新しい診断はしません。',
+     data:['呼び出し','診察前の音声メモ'],step:'STEP 1・3'},
+    {nav:'診察後',time:'11:24',status:['ok','診察が終わりました'],
+     dest:'3階 お薬の<br>受取カウンターへ',sub:'お薬引換券 No.A-123（窓口での受け取り不要）',
+     card:{l:'会計の列に並ぶ必要はありません',v:'らくらく会計で自動精算',tone:'ok'},
+     cta:{label:'案内を開始',sheet:'route3'},
+     how:'お薬の引換券番号をアプリに届け、窓口に寄る手間を一つ減らします。会計は自動精算なので、列に並ばずに済みます。',
+     data:['会計','お薬引換券'],step:'STEP 1'},
+    {nav:'帰宅後',time:'15:02',status:['ok','今日の診察のまとめが届きました'],
+     banner:['今日の診察のまとめ','決まったことと次回の予定を、やさしい言葉でまとめました'],
+     dest:'次回 <em>11月26日</em><br>10:00 採血から',sub:'予約は済んでいます',
+     card:{l:'今日のまとめ',v:'決まったこと・お薬の目的'},
+     cta:{label:'まとめを読む',sheet:'summary'},
+     how:'帰宅後に、決まったこと・次にすること・お薬の目的を、やさしい言葉で届けます。カルテの記載を医師監修のテンプレートで言い換えるだけで、主治医の説明が優先です。',
+     data:['カルテ記載の言い換え','次回予約'],step:'STEP 3'}
+  ];
+
+  const sheets={
+    route1:{title:'3階 総合受付まで',type:'route',steps:[['正面玄関から入る','いまここ'],['正面のエスカレーターで3階へ','約1分'],['降りて右手、総合受付','保険証をお出しください']],done:'保険証を出した'},
+    route2:{title:'2階 採血室まで',type:'route',steps:[['総合受付を出て、エスカレーターへ','いまここ'],['2階で降りて左へ','約2分'],['「採血」の案内表示に沿って進む','受付機に診察券を通してください']],done:'採血が終わった'},
+    routeBack:{title:'2階 内科まで',type:'route',steps:[['1階 カフェを出て、エスカレーターへ','いまここ'],['2階で降りて左へ','約3分'],['内科の待合でお待ちください','呼ばれたら通知します']],done:'内科に着いた'},
+    route3:{title:'3階 お薬の受取カウンターまで',type:'route',steps:[['内科を出て、エスカレーターへ','いまここ'],['3階で降りて正面','約2分'],['表示板に A-123 が出たら受け取る','番号はこの画面に出ています']],done:'お薬を受け取った'},
+    places:{title:'いま立ち寄れる場所',type:'list',items:[['1階 カフェ','徒歩3分'],['1階 売店','徒歩3分'],['2階 内科前の待合','徒歩4分']],
+      note:'順番が早まったときは、すぐに通知でお知らせします。診察が近づくと、立ち寄りの提案は出なくなります。',done:'1階 カフェに寄る',act:'cafe'},
+    questions:{title:'先生に確認すること',type:'q',items:[['夜に咳が出ることがある','薬を変えてから、寝る前に多いと話していました'],['次の血液検査はいつごろか','前回聞きそびれたこととして残っていました']],
+      note:'診察前に声で話した内容を、AIが短く整理しました。新しい診断や助言はしません。',done:'診察室に入った'},
+    summary:{title:'今日の診察のまとめ',type:'summary',secs:[
+      ['決まったこと','夜の咳の様子を見るため、寝る前の薬を1種類変えます。'],
+      ['お薬の目的','新しい薬は、血圧を下げるための薬です。これまでの薬と同じ役割で、咳が出にくい種類です。'],
+      ['次にすること','11月26日（木）10:00 に採血、そのあと内科の診察です。'],
+      ['聞き忘れたこと','「次の血液検査の時期」は今日確認できました。ほかに気になることがあれば、次回の確認リストに入れておきます。']],
+      note:'このまとめは、カルテの記載をやさしい言葉に言い換えたものです。内容は主治医の説明が優先されます。',done:'最初からもう一度体験する'}
+  };
+
+  let i=0, early=false, cafe=false, bannerTimer=null, cafeTimer=null;
+  const $=id=>document.getElementById(id);
+  const main=$('main'), flow=$('flow');
+  const isPhone=()=>window.matchMedia('(max-width:600px)').matches;
+
+  function current(){
+    const s=scenes[i];
+    if(early && s.early) return Object.assign({},s,s.early);
+    if(cafe && s.cafeCard) return Object.assign({},s,{card:s.cafeCard});
+    return s;
+  }
+
+  function render(animate){
+    const s=current();
+    $('clock').textContent=s.time;
+    const icon={ok:ICON_OK,info:ICON_INFO,warn:ICON_WARN}[s.status[0]];
+    const card=s.card?`<div class="card ${s.card.tone||''}"><span class="l">${s.card.l}</span><span class="v">${s.card.v}</span></div>`:'';
+    main.innerHTML=
+      `<div class="statusline ${s.status[0]}">${icon}<span>${s.status[1]}</span></div>
+       <div class="kicker">次にすること</div>
+       <div class="dest">${s.dest}</div>
+       <div class="sub">${s.sub}</div>
+       <div class="grow"></div>${card}
+       <button class="cta" id="cta" type="button">${s.cta.label}</button>`;
+    if(animate){main.classList.remove('enter');void main.offsetWidth;main.classList.add('enter');}
+    $('cta').addEventListener('click',()=>{ s.cta.act==='next' ? go(i+1) : openSheet(s.cta.sheet); });
+
+    $('howText').textContent=s.how;
+    $('howChips').innerHTML=`<span class="chip step">${s.step}</span>`+s.data.map(d=>`<span class="chip">使う情報：${d}</span>`).join('');
+    $('event').hidden=!(scenes[i].early && !early);
+
+    [...flow.querySelectorAll('button')].forEach((b,k)=>{
+      b.classList.toggle('done',k<i);
+      if(k===i) b.setAttribute('aria-current','step'); else b.removeAttribute('aria-current');
+    });
+    $('prev').disabled=i===0;
+    $('next').textContent = i===scenes.length-1 ? '最初から' : '次の場面へ';
+  }
+
+  function showBanner(b){
+    clearTimeout(bannerTimer);
+    $('bannerT').textContent=b[0]; $('bannerB').textContent=b[1];
+    const el=$('banner'); el.classList.add('show');
+    bannerTimer=setTimeout(()=>el.classList.remove('show'),4200);
+  }
+  function hideBanner(){clearTimeout(bannerTimer);$('banner').classList.remove('show');}
+
+  function go(n){
+    if(n>=scenes.length) n=0;
+    if(n<0) n=0;
+    clearTimeout(cafeTimer);
+    closeSheet(); hideBanner();
+    early=false; cafe=false; i=n; render(true);
+    const s=scenes[i];
+    if(s.banner) setTimeout(()=>showBanner(s.banner),350);
+  }
+
+  /* Generic bottom sheet: title, inner HTML, and a list of buttons */
+  function openPanel(title,html,actions){
+    $('sheetTitle').textContent=title;
+    $('sheetBody').innerHTML=html;
+    $('sheetBody').scrollTop=0;
+    const acts=$('sheetActions'); acts.innerHTML='';
+    actions.forEach(a=>{
+      const b=document.createElement('button');
+      b.type='button'; b.className=a.cls||'cta'; b.textContent=a.label;
+      b.addEventListener('click',a.fn); acts.appendChild(b);
+    });
+    $('scrim').classList.add('show');$('sheet').classList.add('show');
+    setTimeout(()=>{const f=acts.querySelector('button'); if(f) f.focus({preventScroll:true});},60);
+  }
+  function closeSheet(){$('scrim').classList.remove('show');$('sheet').classList.remove('show');}
+
+  function openSheet(key){
+    const d=sheets[key]; if(!d) return;
+    let html='';
+    if(d.type==='route'){
+      html='<ol class="route">'+d.steps.map((st,k)=>`<li class="${k===0?'now':''}"><span class="n">${k+1}</span><span class="tx">${st[0]}<small>${st[1]}</small></span></li>`).join('')+'</ol>';
+    }else if(d.type==='list'){
+      html='<ul class="items">'+d.items.map(it=>`<li><b>${it[0]}</b><span>${it[1]}</span></li>`).join('')+'</ul>';
+    }else if(d.type==='q'){
+      html='<ul class="items q">'+d.items.map(it=>`<li><b>${it[0]}</b><span>${it[1]}</span></li>`).join('')+'</ul>';
+    }else if(d.type==='summary'){
+      html=d.secs.map(sc=>`<div class="sum"><h4>${sc[0]}</h4><p>${sc[1]}</p></div>`).join('');
+    }
+    if(d.note) html+=`<div class="note">${d.note}</div>`;
+    const doneFn = d.act==='cafe' ? goCafe : ()=>go(i+1);
+    openPanel(d.title,html,[
+      {label:d.done,fn:doneFn},
+      {label:'閉じる',cls:'sec-btn',fn:closeSheet}
+    ]);
+  }
+
+  /* Waiting scene: stop at the cafe, then the turn comes early */
+  function goCafe(){
+    closeSheet(); cafe=true; render(true);
+    clearTimeout(cafeTimer);
+    cafeTimer=setTimeout(triggerEarly,3000);
+  }
+
+  function triggerEarly(){
+    if(!scenes[i].early || early) return;
+    clearTimeout(cafeTimer);
+    closeSheet(); early=true; render(true);
+    showBanner(scenes[i].early.banner);
+  }
+
+  /* Phone-only menu: what this screen does, jump to a scene, notes */
+  function openMenu(){
+    const s=current();
+    let html=`<p class="lbl">この画面のしくみ</p><p class="how-m">${s.how}</p>
+      <div class="chips-m"><span class="step">${s.step}</span>${s.data.map(d=>`<span>使う情報：${d}</span>`).join('')}</div>`;
+    const acts=[];
+    html+=`<p class="lbl" style="margin-top:6px">場面を選ぶ</p><ul class="jump">`+
+      scenes.map((sc,k)=>`<li><button type="button" data-k="${k}"${k===i?' aria-current="step"':''}><b>${k+1}</b>${sc.nav}</button></li>`).join('')+'</ul>';
+    if(scenes[i].early && !early) acts.push({label:'順番が早まったら？',cls:'warn-btn',fn:triggerEarly});
+    html+=`<div class="note">近畿大学病院「通院支援アプリ アイデアコンテスト2026」の提案 KINDAI PASS の試作品です。画面に出てくる場所・時刻・番号・診察の内容はすべて架空の例で、実際の病院の案内とは異なります。</div>`;
+    acts.push({label:'閉じる',cls:'sec-btn',fn:closeSheet});
+    openPanel('試作品メニュー',html,acts);
+    $('sheetBody').querySelectorAll('.jump button').forEach(b=>b.addEventListener('click',()=>go(+b.dataset.k)));
+  }
+
+  function openWelcome(){
+    openPanel('KINDAI PASS 試作品',
+      `<p class="welcome-lead">受付から帰宅後まで、画面に出るのは「次にすること」一つだけ。通院支援アプリの提案を、実際に触って確かめられる試作品です。</p>
+       <ol class="welcome-steps"><li>画面下の青いボタンを押して進みます</li><li>案内が出たら、その行動をしたつもりでボタンを押します</li><li>右上の「試作品メニュー」から、場面の移動や仕組みの説明を見られます</li></ol>
+       <div class="note">場所・時刻・番号・診察の内容はすべて架空の例です。</div>`,
+      [{label:'体験をはじめる',fn:closeSheet}]);
+  }
+
+  flow.innerHTML=scenes.map((s,k)=>`<li><button type="button" data-k="${k}"><span class="no">${k+1}</span><span class="tm">${s.time}</span><span class="lb">${s.nav}</span></button></li>`).join('');
+  flow.addEventListener('click',e=>{const b=e.target.closest('button'); if(b) go(+b.dataset.k);});
+  $('prev').addEventListener('click',()=>go(i-1));
+  $('next').addEventListener('click',()=>go(i+1));
+  $('event').addEventListener('click',triggerEarly);
+  $('menuBtn').addEventListener('click',openMenu);
+  $('scrim').addEventListener('click',closeSheet);
+  document.addEventListener('keydown',e=>{
+    if(e.target.closest('input,textarea')) return;
+    if(e.key==='ArrowRight'){go(i+1);}
+    else if(e.key==='ArrowLeft'){go(i-1);}
+    else if(e.key==='Escape'){closeSheet();}
+  });
+
+  render(false);
+  if(isPhone()) setTimeout(openWelcome,250);
+})();
+</script>
+
+</body>
+</html>
