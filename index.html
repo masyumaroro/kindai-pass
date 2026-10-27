@@ -3,23 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#F5F6F8">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="description" content="KINDAI PASS（通院支援アプリ アイデアコンテスト2026 提案）の試作品">
-
-<title>KINDAI PASS 試作品</title>
+<meta name="robots" content="noindex">
+<title>KINDAI PASS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+</head>
+<body>
 <style>
-/* Layout: on a computer, the phone mockup sits left and a presenter panel right. On a phone, the app itself fills the screen and a small menu holds the demo controls. */
+/* Layout: on a computer the app runs inside a phone mockup on the left and a prototype guide sits on the right; on a phone the app fills the screen and the guide moves into the 試作品 sheet. */
 :root{
+  /* the page around the phone follows the viewer's theme */
   --page:#E8ECF3; --panel:#FFFFFF; --ink:#14213D; --muted:#56627A; --line:#D5DCE8;
   --accent:#1D4E9E; --accent-ink:#FFFFFF; --accent-soft:#E2E9F5; --bezel:#121A2B; --focus:#E0A100;
-  /* The app screen keeps the product's own light look in both themes */
-  --app-bg:#F5F6F8; --app-card:#FCFCFD; --app-ink:#14213D; --app-muted:#5B6578; --app-line:#DCE2EC;
-  --app-accent:#1D4E9E; --app-soft:#EAEFF7; --app-ok-bg:#E6F2EA; --app-ok:#1F6B3D;
-  --app-warn-bg:#FCEFD6; --app-warn:#8A5300; --app-scrim:rgba(20,33,61,.38);
+  /* the app keeps the product's own light look in both themes */
+  --app-bg:#F4F6F9; --app-card:#FFFFFF; --app-ink:#14213D; --app-muted:#566176; --app-line:#DCE2EC;
+  --app-accent:#1D4E9E; --app-accent-ink:#FFFFFF; --app-soft:#E9EEF7; --app-ok-bg:#E4F2E8; --app-ok:#1E6A3B;
+  --app-warn-bg:#FCEFD6; --app-warn:#8A5300; --app-alert:#C23B2F; --app-scrim:rgba(20,33,61,.42);
+  --app-map:#EDF1F7; --app-room:#FFFFFF; --app-bar:#0B0F17; --app-dark:#14213D; --app-focus:#B97F00;
   --font:"Noto Sans JP","Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,system-ui,sans-serif;
 }
 @media (prefers-color-scheme: dark){
@@ -35,456 +37,1141 @@
   color-scheme:dark;
 }
 *{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
 body{background:var(--page);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.6;font-feature-settings:"palt";-webkit-tap-highlight-color:transparent}
-button{font:inherit;cursor:pointer;touch-action:manipulation}
-button:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;touch-action:manipulation}
+button:disabled{cursor:default}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+h1,h2,h3,h4,p{margin:0}
 
-.wrap{max-width:1080px;margin:0 auto;padding-block:32px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;grid-template-columns:auto minmax(0,1fr);gap:48px;align-items:start}
-@media (max-width:860px){.wrap{grid-template-columns:minmax(0,1fr);gap:28px}.stage{justify-self:center}}
-
-/* ---------- Phone ---------- */
+/* ---------- page layout ---------- */
+.wrap{max-width:1120px;margin:0 auto;padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;grid-template-columns:auto minmax(0,1fr);gap:44px;align-items:start}
 .stage{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px)}
-@media (max-width:860px){.stage{position:static}}
-.phone{width:372px;max-width:100%;aspect-ratio:372/770;background:var(--bezel);border-radius:52px;padding:12px;box-shadow:0 24px 60px rgba(13,20,33,.28)}
-.screen{position:relative;height:100%;border-radius:41px;overflow:hidden;background:var(--app-bg);color:var(--app-ink);display:flex;flex-direction:column}
-.sbar{display:flex;justify-content:space-between;align-items:center;padding:14px 28px 4px;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
+@media (max-width:860px){.wrap{grid-template-columns:minmax(0,1fr);gap:28px}.stage{position:static;justify-self:center}}
+
+/* ---------- phone frame ---------- */
+.phone{height:min(790px,calc(100vh - 40px));min-height:640px;aspect-ratio:380/790;max-width:100%;background:var(--bezel);border-radius:54px;padding:12px;box-shadow:0 24px 60px rgba(13,20,33,.28)}
+.screen{position:relative;height:100%;border-radius:43px;overflow:hidden;overflow:clip;background:var(--app-bg);color:var(--app-ink);display:flex;flex-direction:column;color-scheme:light;--s:1;--gut:22px}
+.pbody>*,.vpad>*,.sbody>*,.ostep>*,.guide>*,.today>:not(.grow){flex-shrink:0}
+.screen[data-size="large"]{--s:1.13}
+.screen[data-size="xl"]{--s:1.26}
+.screen :focus-visible{outline-color:var(--app-focus)}
+.sbar{flex:none;display:flex;justify-content:space-between;align-items:center;padding:14px 30px 2px;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
 .sbar .notch{width:96px;height:26px;border-radius:14px;background:var(--bezel)}
 .sbar .batt{font-size:12px;font-weight:500;color:var(--app-muted)}
-.appbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 24px 0;min-height:30px}
-.brand{font-size:13px;font-weight:900;letter-spacing:.14em;color:var(--app-accent)}
-.today{font-size:12px;color:var(--app-muted)}
-.menu-btn{display:none;align-items:center;gap:6px;border:1px solid var(--app-line);background:var(--app-card);color:var(--app-accent);border-radius:999px;padding:5px 12px 5px 10px;font-size:12.5px;font-weight:700}
-.menu-btn svg{width:15px;height:15px}
-.main{flex:1;display:flex;flex-direction:column;gap:6px;padding:22px 24px 26px;min-height:0}
-.main.enter{animation:enter .38s ease-out}
+.appbar{flex:none;display:flex;align-items:center;gap:4px;padding:4px 12px 2px var(--gut);min-height:50px}
+.brand{margin-right:auto;font-size:13px;font-weight:900;letter-spacing:.14em;color:var(--app-accent);white-space:nowrap}
+.hbtn{position:relative;width:44px;height:44px;border:0;border-radius:12px;background:transparent;color:var(--app-ink);display:grid;place-items:center}
+.hbtn:hover{background:var(--app-soft)}
+.hbtn svg{width:23px;height:23px}
+.hbtn .dot{position:absolute;top:9px;right:10px;width:10px;height:10px;border-radius:50%;background:var(--app-alert);border:2px solid var(--app-bg)}
+.pill{display:none;align-items:center;gap:6px;border:1px solid var(--app-line);background:var(--app-card);color:var(--app-accent);border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:700;white-space:nowrap}
+.pill .clk{color:var(--app-ink);font-variant-numeric:tabular-nums;font-weight:500}
+
+/* ---------- views ---------- */
+.views{position:relative;flex:1;min-height:0}
+.view{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.today{min-height:100%;display:flex;flex-direction:column;padding:8px var(--gut) 18px}
+.today.enter .anim{animation:enter .38s ease-out}
 @keyframes enter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.statusline{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--app-muted);margin-bottom:10px}
+.dateline{font-size:calc(var(--s)*12.5px);color:var(--app-muted);margin-bottom:16px}
+.statusline{display:flex;gap:8px;align-items:center;font-size:calc(var(--s)*14px);color:var(--app-muted);margin-bottom:10px}
 .statusline svg{width:20px;height:20px;flex:none}
 .statusline.ok svg{color:var(--app-accent)}
 .statusline.warn{color:var(--app-warn);font-weight:700}
 .statusline.warn svg{color:var(--app-warn)}
-.kicker{font-size:14px;color:var(--app-muted)}
-.dest{font-size:31px;font-weight:900;line-height:1.28;text-wrap:balance;letter-spacing:.01em}
-.dest em{font-style:normal;color:var(--app-accent);font-variant-numeric:tabular-nums}
-.sub{font-size:15px;color:var(--app-muted);margin-top:4px}
-.grow{flex:1}
-.card{background:var(--app-soft);border-radius:14px;padding:13px 16px;display:flex;flex-direction:column;gap:2px;margin-bottom:12px}
-.card .l{font-size:13px;color:var(--app-muted)}
-.card .v{font-size:16px;font-weight:700}
+.kicker{font-size:calc(var(--s)*14px);color:var(--app-muted)}
+.dest,.sub,.navtx b,.sp,.onb h2,.ph,.banner .b{word-break:auto-phrase}
+.dest{font-size:calc(var(--s)*31px);font-weight:900;line-height:1.28;letter-spacing:.01em;text-wrap:balance;margin-top:2px}
+.dest em{font-style:normal;color:var(--app-accent);font-variant-numeric:tabular-nums;white-space:nowrap}
+.sub{font-size:calc(var(--s)*15px);color:var(--app-muted);margin-top:8px}
+.sub em{font-style:normal;font-weight:700;color:var(--app-ink);font-variant-numeric:tabular-nums}
+.grow{flex:1;min-height:18px}
+.card{background:var(--app-soft);border-radius:14px;padding:12px 16px;display:flex;flex-direction:column;gap:1px;margin-bottom:12px}
+.card .l{font-size:calc(var(--s)*13px);color:var(--app-muted)}
+.card .v{font-size:calc(var(--s)*16px);font-weight:700}
 .card.ok{background:var(--app-ok-bg)}.card.ok .l,.card.ok .v{color:var(--app-ok)}
 .card.warn{background:var(--app-warn-bg)}.card.warn .l,.card.warn .v{color:var(--app-warn)}
-.cta{border:0;border-radius:14px;background:var(--app-accent);color:#FFFFFF;font-size:18px;font-weight:700;padding:16px;width:100%}
+.cta{border:0;border-radius:14px;background:var(--app-accent);color:var(--app-accent-ink);font-size:calc(var(--s)*18px);font-weight:700;padding:15px 16px;width:100%;min-height:56px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 .cta:active{transform:scale(.985)}
+.cta:disabled{background:var(--app-line);color:var(--app-muted)}
+.cta.pulse{animation:pulse 1.6s ease-in-out 3}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(29,78,158,.0)}50%{box-shadow:0 0 0 8px rgba(29,78,158,.18)}}
+.why{align-self:center;margin-top:8px;border:0;background:none;color:var(--app-accent);font-size:calc(var(--s)*13.5px);font-weight:700;padding:8px 10px;text-decoration:underline;text-underline-offset:3px}
 
-/* banner (push notification) */
-.banner{position:absolute;left:10px;right:10px;top:46px;z-index:5;background:var(--app-card);border-radius:18px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 10px 30px rgba(20,33,61,.22);transform:translateY(-160%);transition:transform .4s cubic-bezier(.2,.8,.2,1)}
-.banner.show{transform:none}
-.banner .ic{width:34px;height:34px;border-radius:9px;background:var(--app-accent);color:#FFFFFF;display:grid;place-items:center;flex:none}
-.banner .ic svg{width:18px;height:18px}
-.banner .t{font-size:13px;font-weight:700}
-.banner .b{font-size:13px;color:var(--app-muted);line-height:1.45}
-.banner .app{font-size:11px;color:var(--app-muted);letter-spacing:.08em}
-
-/* bottom sheet */
-.scrim{position:absolute;inset:0;background:var(--app-scrim);opacity:0;pointer-events:none;transition:opacity .25s;z-index:6}
-.scrim.show{opacity:1;pointer-events:auto}
-.sheet{position:absolute;left:0;right:0;bottom:0;z-index:7;background:var(--app-card);border-radius:26px 26px 0 0;padding:10px 22px 24px;transform:translateY(105%);transition:transform .32s cubic-bezier(.2,.8,.2,1);max-height:86%;display:flex;flex-direction:column;gap:12px}
-.sheet.show{transform:none}
-.sheet .grip{width:40px;height:5px;border-radius:3px;background:var(--app-line);align-self:center}
-.sheet h3{font-size:19px;font-weight:900;margin:0}
-.sheet .body{overflow-y:auto;min-height:0;display:flex;flex-direction:column;gap:12px;-webkit-overflow-scrolling:touch}
-.sheet .acts{display:flex;flex-direction:column;gap:8px}
-.route{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
-.route li{display:grid;grid-template-columns:28px 1fr;gap:12px;position:relative;padding-bottom:16px}
-.route li:last-child{padding-bottom:0}
-.route li::before{content:"";position:absolute;left:13px;top:28px;bottom:2px;width:2px;background:var(--app-line)}
-.route li:last-child::before{display:none}
-.route .n{width:28px;height:28px;border-radius:50%;background:var(--app-soft);color:var(--app-accent);font-weight:900;font-size:14px;display:grid;place-items:center}
-.route li.now .n{background:var(--app-accent);color:#FFFFFF}
-.route .tx{font-size:16px;font-weight:700;padding-top:2px}
-.route .tx small{display:block;font-size:13px;font-weight:400;color:var(--app-muted)}
+/* lists, groups, page content */
+.vpad{padding:8px 18px 28px;display:flex;flex-direction:column;gap:12px}
+.vhead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.vtitle{font-size:calc(var(--s)*22px);font-weight:900}
+.gtitle{font-size:calc(var(--s)*12px);font-weight:700;letter-spacing:.1em;color:var(--app-muted);margin:6px 4px -4px}
+.group{background:var(--app-card);border:1px solid var(--app-line);border-radius:16px;overflow:hidden}
+.group.pad{padding:14px}
+.row{width:100%;display:flex;align-items:center;gap:12px;padding:12px 14px;border:0;border-top:1px solid var(--app-line);background:none;text-align:left;min-height:58px}
+.row:first-child{border-top:0}
+.row:hover{background:var(--app-bg)}
+.ri{width:36px;height:36px;border-radius:10px;background:var(--app-soft);color:var(--app-accent);display:grid;place-items:center;flex:none}
+.ri svg{width:20px;height:20px}
+.rt{flex:1;min-width:0;font-weight:700;font-size:calc(var(--s)*15px);line-height:1.4}
+.rt small{display:block;font-weight:400;color:var(--app-muted);font-size:calc(var(--s)*12.5px);margin-top:1px}
+.chev{color:var(--app-muted);width:18px;height:18px;flex:none}
+.irow{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-top:1px solid var(--app-line)}
+.irow:first-child{border-top:0}
+.irow b{font-size:calc(var(--s)*14.5px)}
+.irow span{font-size:calc(var(--s)*13.5px);color:var(--app-muted);line-height:1.6}
+.trow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-top:1px solid var(--app-line);cursor:pointer}
+.trow:first-child{border-top:0}
+.trow > span{display:flex;flex-direction:column;min-width:0}
+.trow b{font-size:calc(var(--s)*15px)}
+.trow small{font-size:calc(var(--s)*12.5px);color:var(--app-muted)}
+input[role="switch"]{appearance:none;-webkit-appearance:none;flex:none;width:52px;height:32px;border-radius:16px;background:var(--app-line);position:relative;cursor:pointer;margin:0;transition:background .2s}
+input[role="switch"]::before{content:"";position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:var(--app-card);box-shadow:0 1px 3px rgba(20,33,61,.3);transition:transform .2s}
+input[role="switch"]:checked{background:var(--app-accent)}
+input[role="switch"]:checked::before{transform:translateX(20px)}
+.note{font-size:calc(var(--s)*12.5px);color:var(--app-muted);line-height:1.65;background:var(--app-soft);border-radius:10px;padding:10px 12px}
+.ptext{font-size:calc(var(--s)*14.5px);line-height:1.7}
+.btn2{border:1px solid var(--app-line);background:var(--app-card);color:var(--app-accent);font-weight:700;border-radius:14px;padding:12px 14px;width:100%;font-size:calc(var(--s)*15px);min-height:50px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn2 svg{width:19px;height:19px}
+.btn2:disabled{color:var(--app-muted);opacity:.6}
+.btn-s{border:0;background:var(--app-accent);color:var(--app-accent-ink);font-weight:700;border-radius:12px;padding:0 16px;min-height:46px;white-space:nowrap;font-size:calc(var(--s)*15px)}
+.empty{padding:14px;color:var(--app-muted);font-size:calc(var(--s)*14px)}
+.chipst{font-size:calc(var(--s)*12px);font-weight:700;border-radius:999px;padding:3px 10px;background:var(--app-soft);color:var(--app-accent);white-space:nowrap}
+.chipst.ok{background:var(--app-ok-bg);color:var(--app-ok)}
+.chipst.warn{background:var(--app-warn-bg);color:var(--app-warn)}
+.who{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--app-line);background:var(--app-card);border-radius:999px;padding:6px 10px 6px 14px;font-weight:700;font-size:calc(var(--s)*13px);color:var(--app-ink)}
+.who svg{width:16px;height:16px;color:var(--app-muted)}
+.appt{width:100%;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--app-card);border:1px solid var(--app-line);border-radius:16px;padding:14px;text-align:left}
+.appt .tm{font-size:calc(var(--s)*20px);font-weight:900;color:var(--app-accent);font-variant-numeric:tabular-nums;min-width:3.2em}
+.appt .nm{font-weight:700;font-size:calc(var(--s)*15.5px);line-height:1.4}
+.appt .pl{font-size:calc(var(--s)*13px);color:var(--app-muted)}
+.dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 14px;margin:0;font-size:calc(var(--s)*14.5px)}
+.dl dt{color:var(--app-muted)}
+.dl dd{margin:0;font-weight:700}
 .items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
 .items li{background:var(--app-bg);border:1px solid var(--app-line);border-radius:12px;padding:11px 14px;display:flex;justify-content:space-between;gap:12px;align-items:baseline}
-.items li b{font-size:15px}
-.items li span{font-size:13px;color:var(--app-muted);white-space:nowrap}
-.items.q li{display:block}
-.items.q li b{display:block;font-weight:700;line-height:1.5}
-.note{font-size:12.5px;color:var(--app-muted);line-height:1.6;background:var(--app-soft);border-radius:10px;padding:10px 12px}
-.sum h4{font-size:13px;color:var(--app-accent);margin:0 0 2px;letter-spacing:.04em}
-.sum p{margin:0;font-size:15px;line-height:1.6}
-.sec-btn{border:1px solid var(--app-line);background:var(--app-card);color:var(--app-accent);font-weight:700;border-radius:14px;padding:13px;width:100%;font-size:15px}
-.warn-btn{border:1.5px solid var(--app-warn);background:var(--app-warn-bg);color:var(--app-warn);font-weight:700;border-radius:14px;padding:12px;width:100%;font-size:15px}
-.sheet .cta{font-size:17px;padding:14px}
-.lbl{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--app-muted);margin:0}
-.how-m{margin:0;font-size:14.5px;line-height:1.7}
-.chips-m{display:flex;flex-wrap:wrap;gap:6px}
-.chips-m span{font-size:12px;border:1px solid var(--app-line);border-radius:999px;padding:2px 10px;color:var(--app-muted)}
-.chips-m span.step{background:var(--app-accent);border-color:var(--app-accent);color:#FFFFFF;font-weight:700}
-.jump{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
-.jump button{width:100%;text-align:left;border:1px solid var(--app-line);background:var(--app-bg);color:var(--app-ink);border-radius:10px;padding:8px 10px;font-size:13.5px;display:flex;gap:8px;align-items:center}
-.jump button b{width:20px;height:20px;border-radius:50%;background:var(--app-soft);color:var(--app-accent);font-size:11.5px;display:grid;place-items:center;flex:none}
-.jump button[aria-current="step"]{border-color:var(--app-accent);font-weight:700}
-.jump button[aria-current="step"] b{background:var(--app-accent);color:#FFFFFF}
-.welcome-lead{margin:0;font-size:15px;line-height:1.75}
-.welcome-steps{margin:0;padding-left:1.3em;font-size:14.5px;line-height:1.8}
+.items li b{font-size:calc(var(--s)*15px)}
+.items li span{font-size:calc(var(--s)*13px);color:var(--app-muted);white-space:nowrap}
+.opt{width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--app-bg);border:1px solid var(--app-line);border-radius:12px;padding:12px 14px;text-align:left;min-height:54px}
+.opt b{font-size:calc(var(--s)*15.5px)}
+.opt span{font-size:calc(var(--s)*13px);color:var(--app-muted);white-space:nowrap}
+.opt:hover{border-color:var(--app-accent)}
+.check{display:flex;gap:12px;align-items:flex-start;background:var(--app-bg);border:1px solid var(--app-line);border-radius:12px;padding:12px 14px;cursor:pointer}
+.check input{width:22px;height:22px;margin:2px 0 0;flex:none;accent-color:var(--app-accent)}
+.check span{display:flex;flex-direction:column;gap:2px}
+.check b{font-size:calc(var(--s)*15px)}
+.check small{font-size:calc(var(--s)*12.5px);color:var(--app-muted);line-height:1.55}
+.mrow{display:flex;align-items:center;gap:10px;padding:10px 8px 10px 14px;border-top:1px solid var(--app-line);font-size:calc(var(--s)*15px)}
+.mrow:first-child{border-top:0}
+.mrow span{flex:1;min-width:0}
+.xbtn{width:40px;height:40px;border:0;border-radius:10px;background:transparent;color:var(--app-muted);display:grid;place-items:center;flex:none}
+.xbtn:hover{background:var(--app-bg)}
+.xbtn svg{width:18px;height:18px}
+.addrow{display:flex;gap:8px}
+.addrow input{flex:1;min-width:0;border:1px solid var(--app-line);border-radius:12px;padding:0 12px;min-height:46px;background:var(--app-card);font-size:calc(var(--s)*15px)}
+.addrow input:focus{outline:2px solid var(--app-accent);outline-offset:0}
+.orgbox{background:var(--app-card);border:1px solid var(--app-line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.og h4{font-size:calc(var(--s)*13px);color:var(--app-accent);letter-spacing:.04em;margin-bottom:4px}
+.og ul{margin:0;padding-left:1.2em;font-size:calc(var(--s)*15px);line-height:1.7}
+.thinking{color:var(--app-muted);font-size:calc(var(--s)*14px);padding:6px 2px}
+.thinking::after{content:"";display:inline-block;width:1.2em;text-align:left;animation:dots 1.2s steps(4) infinite}
+@keyframes dots{0%{content:""}25%{content:"・"}50%{content:"・・"}75%{content:"・・・"}}
+.chips2{display:flex;flex-wrap:wrap;gap:6px}
+.chipb{border:1px solid var(--app-line);background:var(--app-bg);border-radius:999px;padding:5px 12px;font-size:calc(var(--s)*13px);font-weight:700;color:var(--app-accent)}
+.termout{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--app-line);padding-top:12px}
+.termout h4{font-size:calc(var(--s)*15px)}
+.termout p{font-size:calc(var(--s)*14.5px);line-height:1.75}
+.src{font-size:calc(var(--s)*12px);color:var(--app-muted)}
+.tl{list-style:none;margin:0;padding:0}
+.tl li{display:grid;grid-template-columns:3.4em minmax(0,1fr);gap:10px;padding:7px 0;font-size:calc(var(--s)*14.5px);border-top:1px dashed var(--app-line)}
+.tl li:first-child{border-top:0}
+.tl b{font-variant-numeric:tabular-nums;color:var(--app-accent)}
+.med{display:flex;flex-direction:column;gap:2px}
+.med b{font-size:calc(var(--s)*16px)}
+.med span{font-size:calc(var(--s)*13.5px);color:var(--app-muted)}
+.medrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.bd{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:baseline;padding:13px 14px;border-top:1px solid var(--app-line)}
+.bd:first-child{border-top:0}
+.bd .bk{font-weight:700;font-size:calc(var(--s)*15px)}
+.bd .bv{font-weight:900;font-size:calc(var(--s)*18px);font-variant-numeric:tabular-nums;color:var(--app-accent);text-align:right}
+.bd .bs{grid-column:1/-1;font-size:calc(var(--s)*13px);color:var(--app-muted)}
+.bd.me{background:var(--app-soft)}
+.seg2{display:flex;background:var(--app-card);border:1px solid var(--app-line);border-radius:12px;padding:3px;gap:3px}
+.seg2 button{flex:1;border:0;background:transparent;border-radius:9px;padding:8px 0;font-weight:700;color:var(--app-muted);font-size:calc(var(--s)*14px)}
+.seg2 button[aria-pressed="true"]{background:var(--app-accent);color:var(--app-accent-ink)}
+.sz{width:100%;display:flex;align-items:center;gap:12px;text-align:left;background:var(--app-card);border:1px solid var(--app-line);border-radius:14px;padding:14px}
+.sz[aria-pressed="true"]{border:2px solid var(--app-accent);padding:13px}
+.sz .r{width:22px;height:22px;border-radius:50%;border:2px solid var(--app-line);flex:none;display:grid;place-items:center}
+.sz[aria-pressed="true"] .r{border-color:var(--app-accent)}
+.sz[aria-pressed="true"] .r::after{content:"";width:12px;height:12px;border-radius:50%;background:var(--app-accent)}
+.sz b{font-weight:700}
+.bus{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;padding:12px 14px;border-top:1px solid var(--app-line);align-items:baseline}
+.bus:first-child{border-top:0}
+.bus b{font-size:calc(var(--s)*18px);font-weight:900;font-variant-numeric:tabular-nums}
+.bus span{font-size:calc(var(--s)*13.5px);color:var(--app-muted)}
+.mcard{border-radius:18px;background:var(--app-dark);color:var(--app-accent-ink);padding:18px 18px 16px;display:flex;flex-direction:column;gap:12px}
+.mcard .mt{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.mcard .mb{font-size:12px;font-weight:900;letter-spacing:.14em}
+.mcard .mn{font-size:calc(var(--s)*20px);font-weight:900}
+.mcard .mk{font-size:12px;opacity:.8}
 
-/* ---------- Presenter panel ---------- */
-.panel{display:flex;flex-direction:column;gap:24px;min-width:0}
-.eyebrow{font-size:12px;font-weight:700;letter-spacing:.18em;color:var(--accent)}
-h1{font-size:clamp(28px,4vw,40px);font-weight:900;line-height:1.2;margin:4px 0 10px;text-wrap:balance}
-.lead{margin:0;color:var(--muted);max-width:34em}
-.box{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px 22px}
+/* ---------- tab bar ---------- */
+.tabbar{flex:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;background:var(--app-card);border-top:1px solid var(--app-line);padding:6px 10px 16px}
+.tab{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:1px;padding:2px 0;color:var(--app-muted);font-size:calc(var(--s)*12px);font-weight:700;min-height:48px}
+.tab .ti{width:54px;height:30px;border-radius:15px;display:grid;place-items:center}
+.tab svg{width:22px;height:22px}
+.tab[aria-current="page"]{color:var(--app-accent)}
+.tab[aria-current="page"] .ti{background:var(--app-soft)}
+
+/* ---------- pushed pages ---------- */
+.page{position:absolute;inset:0;z-index:3;background:var(--app-bg);display:flex;flex-direction:column;transform:translateX(100%);visibility:hidden;transition:transform .28s cubic-bezier(.2,.8,.2,1),visibility 0s linear .28s}
+.page.show{transform:none;visibility:visible;transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+.phead{flex:none;display:flex;align-items:center;gap:4px;padding:2px 12px 6px 8px;border-bottom:1px solid var(--app-line)}
+.back{display:inline-flex;align-items:center;gap:0;border:0;background:none;color:var(--app-accent);font-weight:700;padding:10px 8px 10px 2px;font-size:calc(var(--s)*14px);flex:none}
+.back svg{width:20px;height:20px}
+.ptitle{font-size:calc(var(--s)*16.5px);font-weight:900;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pbody{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:14px 18px 28px;display:flex;flex-direction:column;gap:12px}
+
+/* ---------- notification banner, toast ---------- */
+.banner{position:absolute;left:10px;width:calc(100% - 20px);top:46px;z-index:15;border:0;text-align:left;background:var(--app-card);border-radius:18px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 10px 30px rgba(20,33,61,.24);transform:translateY(-170%);transition:transform .4s cubic-bezier(.2,.8,.2,1);cursor:pointer}
+.banner.show{transform:none}
+.banner .ic{width:34px;height:34px;border-radius:9px;background:var(--app-accent);color:var(--app-accent-ink);display:grid;place-items:center;flex:none}
+.banner .ic svg{width:18px;height:18px}
+.banner .bt{display:flex;flex-direction:column;min-width:0}
+.banner .ap{font-size:11px;color:var(--app-muted);letter-spacing:.06em}
+.banner .t{font-size:13.5px;font-weight:700;line-height:1.45}
+.banner .b{font-size:13px;color:var(--app-muted);line-height:1.5}
+.toast{position:absolute;left:50%;bottom:96px;z-index:16;transform:translate(-50%,16px);opacity:0;pointer-events:none;background:var(--app-dark);color:var(--app-accent-ink);font-size:13.5px;font-weight:700;padding:10px 16px;border-radius:12px;transition:opacity .2s,transform .2s;max-width:calc(100% - 40px);text-align:center;line-height:1.5}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- bottom sheet ---------- */
+.scrim{position:absolute;inset:0;z-index:8;background:var(--app-scrim);opacity:0;pointer-events:none;transition:opacity .25s}
+.scrim.show{opacity:1;pointer-events:auto}
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:9;background:var(--app-card);border-radius:26px 26px 0 0;padding:10px var(--gut) 20px;display:flex;flex-direction:column;gap:12px;max-height:92%;transform:translateY(105%);visibility:hidden;transition:transform .32s cubic-bezier(.2,.8,.2,1),visibility 0s linear .32s}
+.sheet.show{transform:none;visibility:visible;transition:transform .32s cubic-bezier(.2,.8,.2,1)}
+.sheet .grip{width:40px;height:5px;border-radius:3px;background:var(--app-line);align-self:center;flex:none}
+.sheet h3{font-size:calc(var(--s)*19px);font-weight:900;flex:none}
+.sheet .sbody{overflow-y:auto;min-height:0;display:flex;flex-direction:column;gap:12px;-webkit-overflow-scrolling:touch}
+.sheet .sacts{display:flex;flex-direction:column;gap:8px;flex:none}
+.sp{font-size:calc(var(--s)*14.5px);line-height:1.7}
+
+/* route guidance */
+.navprog{display:flex;gap:6px}
+.navprog span{flex:1;height:5px;border-radius:3px;background:var(--app-line)}
+.navprog span.on{background:var(--app-accent)}
+.mapwrap{position:relative;background:var(--app-map);border-radius:16px;padding:8px}
+.flr{position:absolute;top:12px;left:12px;font-size:12px;font-weight:900;background:var(--app-accent);color:var(--app-accent-ink);border-radius:8px;padding:2px 9px}
+.fmap{display:block;width:100%;height:auto}
+.fmap .fl{fill:var(--app-map);stroke:var(--app-line);stroke-width:1.5}
+.fmap .rm rect{fill:var(--app-room);stroke:var(--app-line);stroke-width:1.2}
+.fmap .rm.gen rect{fill:var(--app-map);stroke-dasharray:3 3}
+.fmap .rm text,.fmap .esl{fill:var(--app-muted);font-size:10px;font-family:var(--font);font-weight:500}
+.fmap .rm.hl rect{fill:var(--app-soft);stroke:var(--app-accent);stroke-width:2.2}
+.fmap .rm.hl text{fill:var(--app-accent);font-weight:900}
+.fmap .es rect{fill:var(--app-card);stroke:var(--app-muted);stroke-width:1.2}
+.fmap .es path{fill:none;stroke:var(--app-muted);stroke-width:1.6;stroke-linecap:round}
+.fmap .door{fill:var(--app-accent)}
+.fmap .rt-bg{fill:none;stroke:var(--app-card);stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
+.fmap .rt{fill:none;stroke:var(--app-accent);stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:2 8;animation:march 1s linear infinite}
+@keyframes march{to{stroke-dashoffset:-10}}
+.fmap .here{fill:var(--app-ok);stroke:var(--app-card);stroke-width:2.5}
+.fmap .goal{fill:var(--app-accent);stroke:var(--app-card);stroke-width:2.5}
+.navtx{display:flex;flex-direction:column;gap:2px}
+.navtx b{font-size:calc(var(--s)*18px);line-height:1.45}
+.navtx small{font-size:calc(var(--s)*13.5px);color:var(--app-muted)}
+
+/* barcode */
+.bc{background:var(--app-card);border:1px solid var(--app-line);border-radius:14px;padding:14px 12px 10px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.bc svg{width:100%;max-width:300px;height:76px}
+.bc svg rect{fill:var(--app-bar)}
+.bcno{font-size:calc(var(--s)*14px);font-weight:700;letter-spacing:.12em;font-variant-numeric:tabular-nums}
+
+/* big number / show to staff */
+.big{position:absolute;inset:0;z-index:12;background:var(--app-card);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:28px var(--gut);text-align:center}
+.big .lab{font-size:18px;color:var(--app-muted);font-weight:700}
+.big .num{font-size:clamp(60px,20vw,92px);line-height:1.1;font-weight:900;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.big .bsub{font-size:15px;color:var(--app-muted)}
+.big .btn2{max-width:280px;margin-top:10px}
+.bigl{text-align:left;margin:0;padding-left:1.3em;font-size:clamp(22px,6.4vw,28px);font-weight:700;line-height:1.5;display:flex;flex-direction:column;gap:12px;max-width:100%}
+
+/* ---------- first-run registration ---------- */
+.onb{position:absolute;inset:0;z-index:20;background:var(--app-bg);display:flex;flex-direction:column;padding:22px var(--gut) 20px}
+.ostep{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+.ostep.center{justify-content:center}
+.ostepno{font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--app-accent)}
+.onb h2{font-size:calc(var(--s)*25px);font-weight:900;line-height:1.35;text-wrap:balance}
+.onb h2.wel{font-size:calc(var(--s)*22px);line-height:1.5}
+.op{font-size:calc(var(--s)*15px);line-height:1.75;color:var(--app-ink)}
+.omark{font-size:14px;font-weight:900;letter-spacing:.2em;color:var(--app-accent)}
+.onote{font-size:12.5px;color:var(--app-muted);background:var(--app-soft);border-radius:10px;padding:10px 12px;line-height:1.6}
+.oacts{flex:none;display:flex;flex-direction:column;gap:8px;padding-top:14px}
+.olist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.olist li{display:flex;gap:10px;align-items:flex-start;font-size:calc(var(--s)*15px);line-height:1.65}
+.olist svg{width:22px;height:22px;flex:none;color:var(--app-accent);margin-top:1px}
+.vf{position:relative;width:min(220px,70%);aspect-ratio:1;max-width:100%;align-self:center;border-radius:24px;background:var(--app-dark);overflow:hidden;display:grid;place-items:center}
+.vf .qr{width:62%;aspect-ratio:1;background:var(--app-card);border-radius:8px;padding:6px;opacity:0;transform:scale(.9);transition:opacity .3s,transform .3s}
+.vf .qr svg{display:block;width:100%;height:100%}
+.vf .qr svg rect{fill:var(--app-bar)}
+.vf .qr svg rect.l{fill:var(--app-card)}
+.vf.done .qr,.vf.scanning .qr{opacity:1;transform:none}
+.vf i{position:absolute;width:30px;height:30px;border:4px solid var(--app-accent-ink);opacity:.9}
+.vf .c1{top:14px;left:14px;border-right:0;border-bottom:0;border-radius:8px 0 0 0}
+.vf .c2{top:14px;right:14px;border-left:0;border-bottom:0;border-radius:0 8px 0 0}
+.vf .c3{bottom:14px;left:14px;border-right:0;border-top:0;border-radius:0 0 0 8px}
+.vf .c4{bottom:14px;right:14px;border-left:0;border-top:0;border-radius:0 0 8px 0}
+.vf .scan{position:absolute;left:12%;right:12%;height:3px;border-radius:2px;background:var(--app-ok-bg);box-shadow:0 0 12px var(--app-ok-bg);top:20%;opacity:0}
+.vf.scanning .scan{opacity:1;animation:scan 1.1s ease-in-out infinite alternate}
+@keyframes scan{to{top:78%}}
+.vfcap{font-size:12px;color:var(--app-muted);text-align:center}
+.scanres{display:flex;gap:8px;align-items:center;justify-content:center;font-weight:700;color:var(--app-ok);font-size:calc(var(--s)*15px)}
+.scanres svg{width:22px;height:22px}
+.bigok{width:72px;height:72px;border-radius:50%;background:var(--app-ok-bg);color:var(--app-ok);display:grid;place-items:center;align-self:center}
+.bigok svg{width:40px;height:40px}
+.ostep.center h2,.ostep.center .op{text-align:center}
+
+/* ---------- prototype guide (page tokens; remapped inside the app sheet) ---------- */
+.panel{display:flex;flex-direction:column;gap:18px;min-width:0;padding-top:4px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.16em;color:var(--accent)}
+.panel h1{font-size:clamp(28px,4vw,40px);font-weight:900;line-height:1.2;margin:4px 0 10px}
+.lead{color:var(--muted);max-width:36em;line-height:1.75}
+.guide{display:flex;flex-direction:column;gap:14px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.bh{font-size:12.5px;font-weight:700;letter-spacing:.12em;color:var(--muted)}
+.ph{font-size:20px;font-weight:900;line-height:1.35}
+.how{font-size:15px;line-height:1.75;color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12.5px;border:1px solid var(--line);border-radius:999px;padding:3px 11px;color:var(--muted)}
+.chip.ok{border-color:var(--accent);color:var(--accent)}
+.ctrl{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px}
+.ctrl .lbl{font-size:14px;font-weight:700}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.seg button{border:0;border-left:1px solid var(--line);background:transparent;padding:8px 12px;font-size:13px;font-weight:700;color:var(--muted)}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.gbtns{display:flex;flex-wrap:wrap;gap:8px}
+.gbtn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:12px;padding:10px 14px;font-weight:700;font-size:14px}
+.gbtn:hover{border-color:var(--accent)}
+.gbtn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.gbtn.event{border-color:var(--focus)}
+.gbtn[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+.gbtns.small .gbtn{font-size:13px;padding:8px 12px;font-weight:500;color:var(--muted)}
+.fine2{font-size:13px;color:var(--muted);line-height:1.65}
+.fine2 b{color:var(--ink);font-variant-numeric:tabular-nums}
+.plist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.plist li{display:flex;flex-direction:column;gap:1px;font-size:14px;line-height:1.65}
+.plist b{font-size:14px}
+.plist span{color:var(--muted)}
+.aistat{font-size:13.5px;border-top:1px solid var(--line);padding-top:10px;color:var(--muted)}
+.aistat b{color:var(--ink)}
 .flow{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
-.flow button{width:100%;display:grid;grid-template-columns:28px 52px 1fr;gap:10px;align-items:center;text-align:left;background:transparent;border:0;border-radius:10px;padding:8px 10px;color:var(--ink)}
-.flow button:hover{background:var(--accent-soft)}
-.flow .no{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:13px;font-weight:700;color:var(--muted)}
-.flow .tm{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
-.flow .lb{font-weight:500}
-.flow button.done .no{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
-.flow button[aria-current="step"]{background:var(--accent-soft)}
-.flow button[aria-current="step"] .no{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.flow button[aria-current="step"] .lb{font-weight:700}
-.ctrls{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
-.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:12px;padding:11px 18px;font-weight:700}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);flex:1;min-width:160px}
-.btn.event{border-color:var(--focus);color:var(--ink);background:transparent}
-.btn:disabled{opacity:.4;cursor:default}
-.how h2{font-size:13px;font-weight:700;letter-spacing:.12em;color:var(--muted);margin:0 0 8px}
-.how p{margin:0 0 14px;font-size:16px;line-height:1.75}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{font-size:12.5px;border:1px solid var(--line);border-radius:999px;padding:4px 12px;color:var(--muted)}
-.chip.step{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
-.rule{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;text-align:center}
-.rule div{background:var(--accent-soft);border-radius:12px;padding:12px 6px}
-.rule b{display:block;font-size:22px;font-weight:900;color:var(--accent)}
-.rule span{font-size:12.5px;color:var(--muted)}
-.fine{font-size:12.5px;color:var(--muted);margin:0;line-height:1.7}
-kbd{font-family:var(--font);font-size:11px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px}
+.flow li{display:flex;align-items:center;gap:10px;padding:5px 4px;font-size:14.5px;color:var(--muted)}
+.flow .no{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:12px;font-weight:700;flex:none}
+.flow li.done .no{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
+.flow li.now{color:var(--ink);font-weight:700}
+.flow li.now .no{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.fine{font-size:12.5px;color:var(--muted);line-height:1.7}
+.gsheet{--panel:var(--app-card);--line:var(--app-line);--ink:var(--app-ink);--muted:var(--app-muted);--accent:var(--app-accent);--accent-ink:var(--app-accent-ink);--accent-soft:var(--app-soft);--focus:var(--app-focus)}
+.gsheet .box{background:var(--app-bg);border-radius:14px;padding:14px}
 
-/* ---------- On a phone: the app fills the screen ---------- */
+/* ---------- on a phone: the app fills the screen ---------- */
 @media (max-width:600px){
   html,body{height:100%}
   body{background:var(--app-bg);overscroll-behavior:none}
   .wrap{display:block;height:100%;max-width:none;padding-block:0;padding-left:0;padding-right:0}
   .stage{position:static;height:100%;width:100%;justify-self:stretch}
-  .phone{width:100%;height:100%;aspect-ratio:auto;border-radius:0;padding:0;box-shadow:none;background:var(--app-bg)}
-  .screen{border-radius:0}
-  .sbar,.panel,.today{display:none}
-  .menu-btn{display:inline-flex}
-  .appbar{padding-top:14px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
-  .main{padding-top:24px;padding-bottom:20px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
-  .dest{font-size:clamp(28px,8.6vw,36px)}
-  .banner{top:10px}
-  .sheet{padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+  .phone{width:100%;height:100%;min-height:0;aspect-ratio:auto;border-radius:0;padding:0;box-shadow:none;background:var(--app-bg)}
+  .screen{border-radius:0;--gut:max(20px,env(safe-area-inset-left,0px))}
+  .sbar,.panel{display:none}
+  .pill{display:inline-flex}
+  .appbar{padding-right:max(10px,env(safe-area-inset-right,0px))}
+  .today{padding-right:max(20px,env(safe-area-inset-right,0px))}
+  .vpad,.pbody{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .tabbar{padding-bottom:8px;padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px))}
+  .banner{top:8px}
+  .toast{bottom:84px}
 }
-
 @media (prefers-reduced-motion:reduce){
-  .main.enter{animation:none}
-  .banner,.sheet,.scrim{transition:none}
+  .today.enter .anim,.cta.pulse,.fmap .rt,.vf.scanning .scan,.thinking::after{animation:none}
+  .banner,.sheet,.scrim,.page,.toast{transition:none}
 }
 </style>
-<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}
-@media (max-width:600px){
-  .appbar{padding-top:calc(14px + env(safe-area-inset-top,0px))!important}
-  .main{padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))!important}
-  .banner{top:calc(10px + env(safe-area-inset-top,0px))!important}
-  .sheet{padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))!important}
-}
-@media (min-width:601px){body{padding-block:env(safe-area-inset-top,0px) env(safe-area-inset-bottom,0px)}}
-</style>
-</head>
-<body>
-
 
 <div class="wrap">
   <div class="stage">
-    <div class="phone" aria-label="KINDAI PASS の画面">
-      <div class="screen" id="screen">
-        <div class="sbar"><span id="clock">9:20</span><span class="notch" aria-hidden="true"></span><span class="batt">5G ▮▮▮</span></div>
-        <div class="appbar">
+    <div class="phone">
+      <div class="screen" id="screen" data-size="normal">
+        <div class="sbar" aria-hidden="true"><span class="simclock">9:40</span><span class="notch"></span><span class="batt">5G ▮▮▮</span></div>
+        <header class="appbar">
           <span class="brand">KINDAI PASS</span>
-          <span class="today">本日の通院</span>
-          <button class="menu-btn" id="menuBtn" type="button" aria-label="試作品のメニューを開く"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>試作品メニュー</button>
-        </div>
-        <div class="main" id="main" aria-live="polite"></div>
+          <button class="hbtn" id="bellBtn" type="button" aria-label="お知らせ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="dot" id="bellDot" hidden></span></button>
+          <button class="pill" id="protoBtn" type="button" aria-label="試作品メニューを開く"><span>試作品</span><span class="clk simclock">9:40</span></button>
+        </header>
 
-        <div class="banner" id="banner" role="status">
+        <div class="views" id="views">
+          <section class="view" id="v-today" data-tab="today" aria-live="polite"></section>
+          <section class="view" id="v-appts" data-tab="appts" hidden></section>
+          <section class="view" id="v-menu" data-tab="menu" hidden></section>
+          <div class="page" id="page" aria-hidden="true">
+            <div class="phead"><button class="back" id="pback" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg><span id="pbackLabel">戻る</span></button><h2 class="ptitle" id="ptitle"></h2></div>
+            <div class="pbody" id="pbody"></div>
+          </div>
+        </div>
+
+        <nav class="tabbar" aria-label="画面の切り替え">
+          <button class="tab" type="button" data-tab="today" aria-current="page"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>きょう</button>
+          <button class="tab" type="button" data-tab="appts"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span>予約</button>
+          <button class="tab" type="button" data-tab="menu"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6.5h16M4 12h16M4 17.5h16"/></svg></span>メニュー</button>
+        </nav>
+
+        <div class="banner" id="banner" role="status" tabindex="-1">
           <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></div>
-          <div><div class="app">KINDAI PASS ・ いま</div><div class="t" id="bannerT"></div><div class="b" id="bannerB"></div></div>
+          <div class="bt"><span class="ap" id="bannerAp">KINDAI PASS ・ いま</span><span class="t" id="bannerT"></span><span class="b" id="bannerB"></span></div>
         </div>
-
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
         <div class="scrim" id="scrim"></div>
-        <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+        <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" aria-hidden="true">
           <div class="grip" aria-hidden="true"></div>
           <h3 id="sheetTitle"></h3>
-          <div class="body" id="sheetBody"></div>
-          <div class="acts" id="sheetActions"></div>
+          <div class="sbody" id="sheetBody"></div>
+          <div class="sacts" id="sheetActions"></div>
         </div>
+        <div class="big" id="big" hidden></div>
+        <div class="onb" id="onb" hidden></div>
       </div>
     </div>
   </div>
 
-  <div class="panel">
+  <aside class="panel" aria-label="試作品の説明と操作">
     <div>
       <div class="eyebrow">通院支援アプリ アイデアコンテスト2026 ｜ 試作品</div>
       <h1>KINDAI PASS</h1>
-      <p class="lead">受付から帰宅後まで、画面に出るのは「次にすること」一つだけ。場面を進めると、患者が見る画面がどう移り変わるかを確かめられます。画面のボタンも押せます。スマートフォンで開くと、アプリの画面だけが全画面で表示されます。</p>
+      <p class="lead">病院のシステムの動きをこの中で再現した、実際に操作できる試作品です。受付をすると、総合受付の確認・採血の呼び出し・順番の変化・お薬の準備などの知らせが病院側から届き、画面の「次にすること」が自動で切り替わります。</p>
     </div>
-
-    <div class="box">
-      <ol class="flow" id="flow"></ol>
-      <div class="ctrls">
-        <button class="btn" id="prev" type="button">前へ</button>
-        <button class="btn primary" id="next" type="button">次の場面へ</button>
-        <button class="btn event" id="event" type="button" hidden>順番が早まったら？</button>
-      </div>
-    </div>
-
-    <div class="box how">
-      <h2>この画面のしくみ</h2>
-      <p id="howText"></p>
-      <div class="chips" id="howChips"></div>
-    </div>
-
-    <div class="box">
-      <div class="how"><h2>どの画面も同じ形</h2></div>
-      <div class="rule">
-        <div><b>1つ</b><span>行き先</span></div>
-        <div><b>1つ</b><span>判断に使う数字</span></div>
-        <div><b>1つ</b><span>ボタン</span></div>
-      </div>
-    </div>
-
-    <p class="fine">画面に出てくる場所・時刻・番号・診察の内容は、説明のための架空の例です。実際の病院の案内とは異なります。<br><kbd>←</kbd> <kbd>→</kbd> キーで場面を移動できます。</p>
-  </div>
+    <div class="guide" id="guide"></div>
+    <p class="fine">予約・番号・時刻・院内の配置・お薬などは、すべて架空の例です。病院のシステムとはつながっていません。</p>
+  </aside>
 </div>
 
 <script>
 (function(){
-  const ICON_OK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="m7.5 12.3 3 3 6-6.3"/></svg>';
-  const ICON_INFO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v5.5M12 7.6v.1"/></svg>';
-  const ICON_WARN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 2.8 19.5h18.4Z"/><path d="M12 10v4.5M12 17.3v.1"/></svg>';
+'use strict';
+document.documentElement.lang='ja';
 
-  const scenes=[
-    {nav:'どこでも受付',time:'9:20',status:['info','本日、内科の予約があります'],
-     dest:'受付を済ませる',sub:'病院の外からでも受付できます',
-     card:{l:'本日の予定',v:'10:00 採血 ／ 11:00 内科'},
-     cta:{label:'受付する',act:'next'},
-     how:'どこでも受付を押した時点から、この先の案内がすべて動き出します。便利さの入口が受付なので、受付を押す理由が自然に生まれます。',
-     data:['予約'],step:'STEP 1'},
-    {nav:'受付直後',time:'9:31',status:['ok','受付が完了しました'],
-     banner:['受付が完了しました','病院に着いたら、3階 総合受付へお進みください'],
-     dest:'3階 総合受付へ',sub:'保険証の確認をお願いします',
-     card:{l:'本日の予定',v:'10:00 採血 ／ 11:00 内科'},
-     cta:{label:'案内を開始',sheet:'route1'},
-     how:'受付が済むと、院内の案内がすぐ始まります。到着してから「どこへ行けば」と迷わせません。',
-     data:['受付状況','予約'],step:'STEP 1・3'},
-    {nav:'検査へ',time:'9:48',status:['ok','保険証の確認が終わりました'],
-     dest:'2階 採血室へ',sub:'10:00 の採血 ／ 徒歩3分',
-     card:{l:'このあと',v:'採血 → 11:00 内科'},
-     cta:{label:'案内を開始',sheet:'route2'},
-     how:'検査と診察が重なる日は、どちらを先に済ませるかを生成AIが判断し、一つだけ示します。患者がAIと会話する必要はありません。',
-     data:['予約','受付状況','各待ち状況'],step:'STEP 1・2'},
-    {nav:'待ち時間',time:'10:12',status:['ok','採血が終わりました'],
-     dest:'<em>10:45</em>までに<br>2階 内科へ戻る',sub:'徒歩4分 ／ 待ち時間の目安 約35分',
-     card:{l:'いま院内で立ち寄れる場所',v:'1階 カフェ（徒歩3分）'},
-     cafeCard:{l:'いまいる場所',v:'1階 カフェ（呼ばれたら通知します）'},
-     cta:{label:'寄れる場所を見る',sheet:'places'},
-     how:'「あと35分」ではなく「10:45に戻る」と時刻で示します。減っていく数字を見張らずに済みます。予測は安全側に丸めています。',
-     data:['待ち時間予測'],step:'STEP 2',
-     early:{time:'10:18',status:['warn','順番が早まりました'],
-       banner:['順番が早まりました','10:30までに 2階 内科へお戻りください'],
-       dest:'<em>10:30</em>までに<br>2階 内科へ戻る',sub:'徒歩4分 ／ いまいる場所から案内します',
-       card:{l:'立ち寄りの提案を止めました',v:'診察が近づいています',tone:'warn'},
-       cta:{label:'戻る道を案内',sheet:'routeBack'},
-       how:'順番が早まると、すぐに通知で呼び戻し、立ち寄りの提案を止めます。「間に合います」とは言い切らず、戻る時刻だけを示します。'}},
-    {nav:'呼び出し',time:'10:41',status:['info','お呼びしています'],
-     banner:['お呼びしています','2階 内科 3番診察室へお入りください'],
-     dest:'2階 内科<br>3番診察室へ',sub:'診察番号 128',
-     card:{l:'先生に確認すること',v:'2件 ・ 朝に話した内容から整理'},
-     cta:{label:'確認することを見る',sheet:'questions'},
-     how:'呼び出しは今のアプリにある情報です。「確認すること」は、診察前に声で話した内容を生成AIが整理したもので、新しい診断はしません。',
-     data:['呼び出し','診察前の音声メモ'],step:'STEP 1・3'},
-    {nav:'診察後',time:'11:24',status:['ok','診察が終わりました'],
-     dest:'3階 お薬の<br>受取カウンターへ',sub:'お薬引換券 No.A-123（窓口での受け取り不要）',
-     card:{l:'会計の列に並ぶ必要はありません',v:'らくらく会計で自動精算',tone:'ok'},
-     cta:{label:'案内を開始',sheet:'route3'},
-     how:'お薬の引換券番号をアプリに届け、窓口に寄る手間を一つ減らします。会計は自動精算なので、列に並ばずに済みます。',
-     data:['会計','お薬引換券'],step:'STEP 1'},
-    {nav:'帰宅後',time:'15:02',status:['ok','今日の診察のまとめが届きました'],
-     banner:['今日の診察のまとめ','決まったことと次回の予定を、やさしい言葉でまとめました'],
-     dest:'次回 <em>11月26日</em><br>10:00 採血から',sub:'予約は済んでいます',
-     card:{l:'今日のまとめ',v:'決まったこと・お薬の目的'},
-     cta:{label:'まとめを読む',sheet:'summary'},
-     how:'帰宅後に、決まったこと・次にすること・お薬の目的を、やさしい言葉で届けます。カルテの記載を医師監修のテンプレートで言い換えるだけで、主治医の説明が優先です。',
-     data:['カルテ記載の言い換え','次回予約'],step:'STEP 3'}
-  ];
+/* ================= helpers ================= */
+const $=(s,r)=>(r||document).querySelector(s);
+const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const WD='日月火水木金土';
+const DAY0=new Date(); DAY0.setHours(0,0,0,0);
+const addDays=(d,n)=>{const x=new Date(d.getTime()); x.setDate(x.getDate()+n); return x;};
+const notSunday=d=>d.getDay()===0?addDays(d,1):d;
+const md=d=>(d.getMonth()+1)+'月'+d.getDate()+'日（'+WD[d.getDay()]+'）';
+const NEXT=notSunday(addDays(DAY0,28));
+const MOM_NEXT=notSunday(addDays(DAY0,8));
+const START=9*60+40;
+const CARD_NO='0123456';
+const PATIENT='近大 太郎';
+function fmtT(m){ if(m<0) return 'きのう '+fmtT(m+1440); m=Math.floor(m+1e-6); return Math.floor(m/60)+':'+String(m%60).padStart(2,'0'); }
 
-  const sheets={
-    route1:{title:'3階 総合受付まで',type:'route',steps:[['正面玄関から入る','いまここ'],['正面のエスカレーターで3階へ','約1分'],['降りて右手、総合受付','保険証をお出しください']],done:'保険証を出した'},
-    route2:{title:'2階 採血室まで',type:'route',steps:[['総合受付を出て、エスカレーターへ','いまここ'],['2階で降りて左へ','約2分'],['「採血」の案内表示に沿って進む','受付機に診察券を通してください']],done:'採血が終わった'},
-    routeBack:{title:'2階 内科まで',type:'route',steps:[['1階 カフェを出て、エスカレーターへ','いまここ'],['2階で降りて左へ','約3分'],['内科の待合でお待ちください','呼ばれたら通知します']],done:'内科に着いた'},
-    route3:{title:'3階 お薬の受取カウンターまで',type:'route',steps:[['内科を出て、エスカレーターへ','いまここ'],['3階で降りて正面','約2分'],['表示板に A-123 が出たら受け取る','番号はこの画面に出ています']],done:'お薬を受け取った'},
-    places:{title:'いま立ち寄れる場所',type:'list',items:[['1階 カフェ','徒歩3分'],['1階 売店','徒歩3分'],['2階 内科前の待合','徒歩4分']],
-      note:'順番が早まったときは、すぐに通知でお知らせします。診察が近づくと、立ち寄りの提案は出なくなります。',done:'1階 カフェに寄る',act:'cafe'},
-    questions:{title:'先生に確認すること',type:'q',items:[['夜に咳が出ることがある','薬を変えてから、寝る前に多いと話していました'],['次の血液検査はいつごろか','前回聞きそびれたこととして残っていました']],
-      note:'診察前に声で話した内容を、AIが短く整理しました。新しい診断や助言はしません。',done:'診察室に入った'},
-    summary:{title:'今日の診察のまとめ',type:'summary',secs:[
-      ['決まったこと','夜の咳の様子を見るため、寝る前の薬を1種類変えます。'],
-      ['お薬の目的','新しい薬は、血圧を下げるための薬です。これまでの薬と同じ役割で、咳が出にくい種類です。'],
-      ['次にすること','11月26日（木）10:00 に採血、そのあと内科の診察です。'],
-      ['聞き忘れたこと','「次の血液検査の時期」は今日確認できました。ほかに気になることがあれば、次回の確認リストに入れておきます。']],
-      note:'このまとめは、カルテの記載をやさしい言葉に言い換えたものです。内容は主治医の説明が優先されます。',done:'最初からもう一度体験する'}
-  };
+const I={
+ ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="m7.5 12.3 3 3 6-6.3"/></svg>',
+ info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v5.5M12 7.6v.1"/></svg>',
+ warn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 2.8 19.5h18.4Z"/><path d="M12 10v4.5M12 17.3v.1"/></svg>',
+ chev:'<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>',
+ down:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
+ x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+ card:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M7 9.5v5M9.5 9.5v5M12.5 9.5v5M15 9.5v5M17 9.5v5"/></svg>',
+ board:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M7.5 9h9M7.5 13h6M7.5 17h4"/></svg>',
+ yen:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 4 5 7 5-7M12 11v9M8 13h8M8 16.5h8"/></svg>',
+ rec:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3.5h7.5l4 4v12.5a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-16a.5.5 0 0 1 .5-.5Z"/><path d="M14 3.5V8h4M9 12.5h6M9 16h6"/></svg>',
+ fam:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19.5c.6-3.4 2.8-5.3 5.5-5.3s4.9 1.9 5.5 5.3"/><circle cx="17" cy="9.5" r="2.4"/><path d="M15.8 14.4c2.5-.3 4.1 1.4 4.7 4.6"/></svg>',
+ map:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M9 4.5 3.5 6.5v13l5.5-2 6 2 5.5-2v-13l-5.5 2Z"/><path d="M9 4.5v13M15 6.5v13"/></svg>',
+ bus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="3.5" width="14" height="14" rx="3"/><path d="M5 10.5h14M8 17.5V20M16 17.5V20"/></svg>',
+ txt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 18 8 6h1l4.5 12M5.2 14h7.6M15 18l2.8-7.5h.7L21.3 18M16 15.6h4.6"/></svg>',
+ bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
+ shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 19 6v5.5c0 4.3-2.9 7.6-7 9-4.1-1.4-7-4.7-7-9V6Z"/><path d="m9 12 2 2 4-4.2"/></svg>',
+ about:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 11v5M12 7.8v.1"/></svg>',
+ spark:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5c.6 4 2.5 5.9 6.5 6.5-4 .6-5.9 2.5-6.5 6.5-.6-4-2.5-5.9-6.5-6.5 4-.6 5.9-2.5 6.5-6.5Z"/><path d="M18.5 15.5c.2 1.4.9 2.1 2.3 2.3-1.4.2-2.1.9-2.3 2.3-.2-1.4-.9-2.1-2.3-2.3 1.4-.2 2.1-.9 2.3-2.3Z"/></svg>'
+};
 
-  let i=0, early=false, cafe=false, bannerTimer=null, cafeTimer=null;
-  const $=id=>document.getElementById(id);
-  const main=$('main'), flow=$('flow');
-  const isPhone=()=>window.matchMedia('(max-width:600px)').matches;
+/* ================= state ================= */
+const KEY='kindai-pass-proto-v2';
+const DEFAULT_MEMO=['夜、せきが出ることがある','次の血液検査はいつごろか'];
+function freshVisit(){ return {phase:'before',loc:'outside',afterpay:true,paid:false,handed:false,times:{},
+  blood:{no:'B-207'},consultNo:128,
+  q:{ahead:0,idx:0,hist:[7,6,8,7,6],early:false,stop:false,rb:null},
+  med:{no:'A-123',ready:false},next:false}; }
+function freshState(){ return {v:2,registered:false,regStart:0,regEnd:0,t:START,speed:60,auto:false,
+  settings:{size:'normal',sound:true,vibrate:true,ai:false,watchMom:true},
+  notes:[],aiLog:[],memo:DEFAULT_MEMO.slice(),visit:freshVisit(),events:[]}; }
+function load(){ try{ const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.v===2&&s.visit&&s.settings) return s; }catch(e){} return null; }
+let S=load()||freshState();
+let saveTimer=null;
+function save(){ clearTimeout(saveTimer); saveTimer=setTimeout(()=>{ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} },120); }
 
-  function current(){
-    const s=scenes[i];
-    if(early && s.early) return Object.assign({},s,s.early);
-    if(cafe && s.cafeCard) return Object.assign({},s,{card:s.cafeCard});
-    return s;
+/* ================= hospital places & routes (fictional layout) ================= */
+const PL={
+ entrance:{f:1,n:'正面玄関',side:'bottom',door:[160,170]},
+ cafe:{f:1,n:'カフェ',side:'left',door:[108,50]},
+ shop:{f:1,n:'売店',side:'left',door:[108,122]},
+ blood:{f:2,n:'採血室',side:'left',door:[108,50]},
+ internal:{f:2,n:'内科',side:'left',door:[108,122]},
+ reception:{f:3,n:'総合受付',side:'right',door:[212,50]},
+ pay:{f:3,n:'会計',side:'right',door:[212,122]},
+ pharmacy:{f:3,n:'お薬の受取カウンター',side:'top',door:[160,44]}
+};
+const ROOMS={
+ 1:[{k:'cafe',x:14,y:16,w:94,h:68,n:'カフェ'},{k:'shop',x:14,y:96,w:94,h:52,n:'売店'},{k:'g1',x:212,y:16,w:94,h:68,n:'総合案内',g:1},{k:'g2',x:212,y:96,w:94,h:52,n:'外来',g:1}],
+ 2:[{k:'blood',x:14,y:16,w:94,h:68,n:'採血室'},{k:'internal',x:14,y:96,w:94,h:52,n:'内科'},{k:'g3',x:212,y:16,w:94,h:68,n:'外来',g:1},{k:'g4',x:212,y:96,w:94,h:52,n:'外来',g:1}],
+ 3:[{k:'pharmacy',x:118,y:12,w:84,h:32,n:'お薬の受取'},{k:'g5',x:14,y:16,w:94,h:132,n:'外来',g:1},{k:'reception',x:212,y:16,w:94,h:68,n:'総合受付'},{k:'pay',x:212,y:96,w:94,h:52,n:'会計'}]
+};
+const placeLabel=k=>k==='outside'?'病院の外':k==='home'?'ご自宅':(PL[k]?PL[k].f+'階 '+PL[k].n:'');
+const dirWord=p=>p.side==='left'?'左手':p.side==='right'?'右手':'正面';
+function spoke(p){ const [x,y]=p.door;
+  if(p.side==='left') return [[x,y],[124,y],[124,92],[142,92]];
+  if(p.side==='right') return [[x,y],[196,y],[196,92],[178,92]];
+  if(p.side==='top') return [[x,y],[160,74]];
+  return [[x,y],[160,110]]; }
+const rev=a=>a.slice().reverse();
+function sameFloorPath(A,B){
+  const cx=s=>s==='left'?124:s==='right'?196:160;
+  if(A.side===B.side && A.side!=='top' && A.side!=='bottom'){ const x=cx(A.side); return [A.door,[x,A.door[1]],[x,B.door[1]],B.door]; }
+  const leg=p=>p.side==='top'?[p.door,[160,60]]:[p.door,[cx(p.side),p.door[1]],[cx(p.side),60]];
+  return leg(A).concat(rev(leg(B))); }
+const ARRIVE_NOTE={reception:'保険証をご用意ください',blood:'受付機で採血の受付をします',internal:'待合のいすでお待ちください',cafe:'呼ばれたら通知でお知らせします',shop:'呼ばれたら通知でお知らせします',pay:'自動支払機で支払います',pharmacy:'お薬引換番号の表示板があります'};
+function makeRoute(from,to){ const A=PL[from],B=PL[to];
+  if(A.f===B.f) return [{f:A.f,p:sameFloorPath(A,B),t:A.n+'を出て、'+dirWord(B)+'の'+B.n+'へ',s:'同じ'+A.f+'階です ・ '+ARRIVE_NOTE[to]}];
+  return [
+    {f:A.f,p:spoke(A),t:from==='entrance'?'正面玄関から入り、正面のエスカレーターへ':A.n+'を出て、エスカレーターへ',s:'いまここ ・ '+A.f+'階'},
+    {f:B.f,p:rev(spoke(B)),t:'エスカレーターで'+B.f+'階へ。降りて'+dirWord(B)+'の'+B.n+'へ',s:ARRIVE_NOTE[to]}
+  ]; }
+function floorSVG(f,path,hl){
+  let s='<svg class="fmap" viewBox="0 0 320 190" role="img" aria-label="'+f+'階の案内図（架空の配置）"><rect class="fl" x="4" y="4" width="312" height="168" rx="14"/>';
+  ROOMS[f].forEach(r=>{ s+='<g class="rm'+(r.g?' gen':'')+(r.k===hl?' hl':'')+'"><rect x="'+r.x+'" y="'+r.y+'" width="'+r.w+'" height="'+r.h+'" rx="8"/><text x="'+(r.x+r.w/2)+'" y="'+(r.y+r.h/2+4)+'" text-anchor="middle">'+r.n+'</text></g>'; });
+  s+='<g class="es"><rect x="142" y="74" width="36" height="36" rx="6"/><path d="M150 103 L170 81"/><path d="M147 103h4M169 81h4"/></g>';
+  s+='<text class="esl" x="160" y="'+(f===1?68:126)+'" text-anchor="middle">エスカレーター</text>';
+  if(f===1) s+='<rect class="door" x="140" y="168" width="40" height="7" rx="3"/><text class="esl" x="160" y="186" text-anchor="middle">正面玄関</text>';
+  if(path&&path.length){ const pts=path.map(p=>p.join(',')).join(' '); const a=path[0],b=path[path.length-1];
+    s+='<polyline class="rt-bg" points="'+pts+'"/><polyline class="rt" points="'+pts+'"/><circle class="here" cx="'+a[0]+'" cy="'+a[1]+'" r="6"/><circle class="goal" cx="'+b[0]+'" cy="'+b[1]+'" r="7"/>'; }
+  return s+'</svg>'; }
+
+/* ================= barcode (NW-7 / Codabar) & decorative QR ================= */
+const CODABAR={'0':'0000011','1':'0000110','2':'0001001','3':'1100000','4':'0010010','5':'1000010','6':'0100001','7':'0100100','8':'0110000','9':'1001000','-':'0001100','$':'0011000',':':'1000101','/':'1010001','.':'1010100','+':'0010101','A':'0011010','B':'0101001','C':'0001011','D':'0001110'};
+function barcodeSVG(data){ const s='A'+data+'A', N=2, W=5; let x=14, r='';
+  for(const ch of s){ const pat=CODABAR[ch]; for(let k=0;k<7;k++){ const w=pat[k]==='1'?W:N; if(k%2===0) r+='<rect x="'+x+'" y="0" width="'+w+'" height="76"/>'; x+=w; } x+=N; }
+  return '<svg viewBox="0 0 '+(x+12)+' 76" preserveAspectRatio="none" role="img" aria-label="診察券番号 '+data+' のバーコード">'+r+'</svg>'; }
+function qrSVG(){ let seed=20261027; const rnd=()=>{ seed=(seed*16807)%2147483647; return seed/2147483647; };
+  const N=21; let r=''; const inF=(x,y)=>(x<8&&y<8)||(x>N-9&&y<8)||(x<8&&y>N-9);
+  for(let y=0;y<N;y++) for(let x=0;x<N;x++){ if(inF(x,y)) continue; if(rnd()<.47) r+='<rect x="'+x+'" y="'+y+'" width="1" height="1"/>'; }
+  [[0,0],[N-7,0],[0,N-7]].forEach(([x,y])=>{ r+='<rect x="'+x+'" y="'+y+'" width="7" height="7"/><rect class="l" x="'+(x+1)+'" y="'+(y+1)+'" width="5" height="5"/><rect x="'+(x+2)+'" y="'+(y+2)+'" width="3" height="3"/>'; });
+  return '<svg viewBox="0 0 21 21" shape-rendering="crispEdges">'+r+'</svg>'; }
+
+/* ================= hospital simulation ================= */
+const DUR=[7,6,8,5,7,6,8,6,7,5];
+const PH_ORDER=['before','checkedin','reception','to_blood','blood_scan','blood_wait','blood_called','wait_consult','called','in_consult','after_consult','pay','pharmacy','done'];
+const pidx=p=>PH_ORDER.indexOf(p);
+function at(dt,type){ S.events.push({at:S.t+dt,type}); S.events.sort((a,b)=>a.at-b.at); save(); }
+function cancel(type){ S.events=S.events.filter(e=>e.type!==type); }
+function processEvents(){ let fired=false;
+  while(S.events.length && S.events[0].at<=S.t+1e-9){ const e=S.events.shift(); const h=HANDLERS[e.type]; if(h) h(); fired=true; }
+  if(fired){ save(); render(); } }
+function predict(){ const q=S.visit.q; const avg=q.hist.reduce((a,b)=>a+b,0)/q.hist.length;
+  const ev=S.events.find(e=>e.type==='q_next'); const cur=ev?Math.max(0,ev.at-S.t):avg;
+  const callAt=S.t+cur+Math.max(0,q.ahead-1)*avg;
+  const rb=Math.max(Math.ceil((S.t+0.01)/5)*5, Math.floor((callAt-10)/5)*5);
+  return {avg,callAt,rb}; }
+function startQueue(){ const q=S.visit.q;
+  q.ahead=Math.max(4,Math.min(7,Math.round((11*60-S.t)/7))); q.idx=0; q.early=false; q.stop=false;
+  cancel('q_next'); cancel('q_early'); at(2,'q_next'); at(7,'q_early'); q.rb=predict().rb; }
+function checkStop(){ const v=S.visit,q=v.q; if(v.phase!=='wait_consult'||q.stop) return;
+  const p=predict(); if(p.callAt-S.t<=20){ q.stop=true;
+    if(v.loc!=='internal') notify('診察が近づいています',fmtT(p.rb)+'までに 2階 内科へお戻りください');
+    save(); render(); } }
+function callPatient(){ const v=S.visit; v.phase='called'; v.times.call=S.t; cancel('q_next'); cancel('q_early');
+  notify('お呼びしています','診察番号 '+v.consultNo+' の方、2階 内科 3番診察室へお入りください');
+  if(v.loc==='internal') at(2,'consult_start'); }
+const HANDLERS={
+  reception_ok(){ const v=S.visit; if(v.phase!=='reception') return; v.phase='to_blood'; v.times.reception=S.t;
+    notify('保険証の確認が終わりました','次は 2階 採血室へお進みください'); },
+  blood_call(){ const v=S.visit; if(v.phase!=='blood_wait') return; v.phase='blood_called'; v.times.bloodCall=S.t;
+    notify('採血室へお入りください','番号 '+v.blood.no+' の方、3番の採血台へお進みください'); at(4,'blood_done'); },
+  blood_done(){ const v=S.visit; if(v.phase!=='blood_called') return; v.phase='wait_consult'; v.times.blood=S.t; startQueue();
+    notify('採血が終わりました',fmtT(predict().rb)+'までに 2階 内科へお戻りください。それまでは院内で過ごせます'); },
+  q_next(){ const v=S.visit,q=v.q; if(v.phase!=='wait_consult') return;
+    q.hist.push(DUR[q.idx%DUR.length]); q.hist=q.hist.slice(-6); q.idx++; q.ahead=Math.max(0,q.ahead-1);
+    if(q.ahead<=0){ callPatient(); return; }
+    at(DUR[q.idx%DUR.length],'q_next'); q.rb=predict().rb; checkStop(); },
+  q_early(){ const v=S.visit,q=v.q; if(v.phase!=='wait_consult'||q.early) return;
+    q.early=true; q.ahead=Math.max(1,q.ahead-2); q.stop=true; const p=predict(); q.rb=p.rb;
+    notify('順番が早まりました', v.loc==='internal' ? '呼ばれる目安が '+fmtT(p.callAt)+'ごろになりました。このままお待ちください' : fmtT(p.rb)+'までに 2階 内科へお戻りください'); },
+  consult_start(){ const v=S.visit; if(v.phase!=='called') return; v.phase='in_consult'; v.times.consultStart=S.t; at(8,'consult_end'); },
+  consult_end(){ const v=S.visit; if(v.phase!=='in_consult') return; v.phase='after_consult'; v.times.consultEnd=S.t; v.next=true;
+    notify('診察が終わりました', v.afterpay ? '3階 お薬の受取カウンターへ。会計の列に並ぶ必要はありません' : '3階 会計（自動支払機）へお進みください');
+    notify('次回の予約が入りました', md(NEXT)+' 10:00 採血、11:00 内科',{quiet:true});
+    at(10,'med_ready'); },
+  med_ready(){ const v=S.visit; v.med.ready=true;
+    if(['after_consult','pay','pharmacy'].includes(v.phase)) notify('お薬の準備ができました','3階 お薬の受取カウンターで、番号 '+v.med.no+' をお受け取りください'); }
+};
+
+/* ================= notifications ================= */
+let actx=null;
+function chime(){ if(!S.settings.sound) return; try{
+  actx=actx||new (window.AudioContext||window.webkitAudioContext)(); if(actx.state==='suspended') actx.resume();
+  const t0=actx.currentTime+0.02;
+  [[880,0],[1318.5,0.17]].forEach(([f,d])=>{ const o=actx.createOscillator(),g=actx.createGain(); o.type='sine'; o.frequency.value=f;
+    g.gain.setValueAtTime(0.0001,t0+d); g.gain.exponentialRampToValueAtTime(0.07,t0+d+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t0+d+0.34);
+    o.connect(g); g.connect(actx.destination); o.start(t0+d); o.stop(t0+d+0.36); }); }catch(e){} }
+document.addEventListener('pointerdown',()=>{ try{ if(!actx){ actx=new (window.AudioContext||window.webkitAudioContext)(); } if(actx.state==='suspended') actx.resume(); }catch(e){} },{once:true});
+function notify(title,body,opt){ opt=opt||{};
+  const n={id:Date.now()+'-'+Math.random().toString(36).slice(2,6),t:S.t,title,body,read:false};
+  S.notes.unshift(n); S.notes=S.notes.slice(0,60); save();
+  if(!opt.quiet){ queueBanner(n); chime(); if(S.settings.vibrate&&navigator.vibrate){ try{navigator.vibrate([90,60,90]);}catch(e){} } }
+  updateBadge(); }
+const bq=[]; let bShowing=false,bTimer=null;
+function queueBanner(n){ bq.push(n); if(!bShowing) nextBanner(); }
+function nextBanner(){ if(bShowing) return; const n=bq.shift(); if(!n) return; bShowing=true;
+  $('#bannerT').textContent=n.title; $('#bannerB').textContent=n.body; $('#bannerAp').textContent='KINDAI PASS ・ '+fmtT(n.t);
+  const el=$('#banner'); el.dataset.id=n.id; el.classList.add('show'); clearTimeout(bTimer); bTimer=setTimeout(hideBanner,4800); }
+function hideBanner(){ if(!bShowing) return; clearTimeout(bTimer); $('#banner').classList.remove('show'); bShowing=false; setTimeout(()=>{ if(!bShowing) nextBanner(); },420); }
+$('#banner').addEventListener('click',()=>{ const id=$('#banner').dataset.id; const n=S.notes.find(x=>x.id===id); if(n) n.read=true; hideBanner(); closeSheet(); setTab('today'); save(); updateBadge(); });
+function updateBadge(){ $('#bellDot').hidden=!S.notes.some(n=>!n.read); }
+let tTimer=null;
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(tTimer); tTimer=setTimeout(()=>t.classList.remove('show'),2600); }
+
+/* ================= bottom sheet ================= */
+let sheetState=null, nav=null;
+function openSheet(o){
+  const wasOpen=$('#sheet').classList.contains('show');
+  $('#sheetTitle').textContent=o.title;
+  const body=$('#sheetBody'); body.innerHTML=o.html||''; body.scrollTop=0;
+  const acts=$('#sheetActions'); acts.innerHTML='';
+  (o.actions||[]).forEach(a=>{ const b=document.createElement('button'); b.type='button'; b.className=a.cls==='sec'?'btn2':'cta'; b.textContent=a.label; if(a.disabled) b.disabled=true; if(a.id) b.id=a.id; b.addEventListener('click',a.fn); acts.appendChild(b); });
+  sheetState={kind:o.kind||'',auto:o.auto||null,onClose:o.onClose||null};
+  $('#scrim').classList.add('show'); const sh=$('#sheet'); sh.classList.add('show'); sh.setAttribute('aria-hidden','false');
+  if(o.onOpen) o.onOpen(body);
+  if(!wasOpen) setTimeout(()=>{ const f=acts.querySelector('button:not([disabled])'); if(f) f.focus({preventScroll:true}); },90); }
+function closeSheet(){ const st=sheetState; sheetState=null; nav=null;
+  $('#scrim').classList.remove('show'); const sh=$('#sheet'); sh.classList.remove('show'); sh.setAttribute('aria-hidden','true');
+  if(st&&st.onClose) st.onClose(); }
+const sheetOpen=()=>$('#sheet').classList.contains('show');
+$('#scrim').addEventListener('click',closeSheet);
+
+/* big number overlay */
+function showBig(html){ const b=$('#big'); b.innerHTML=html+'<button class="btn2" type="button" id="bigClose">閉じる</button>'; b.hidden=false; $('#bigClose').addEventListener('click',()=>{ b.hidden=true; }); $('#bigClose').focus(); }
+const showNum=(label,num)=>showBig('<div class="lab">'+esc(label)+'</div><div class="num">'+esc(num)+'</div><div class="bsub">係の人に、この画面を見せてください</div>');
+function showMemoBig(){ showBig('<div class="lab">先生へ　聞きたいこと・伝えたいこと</div><ol class="bigl">'+S.memo.map(m=>'<li>'+esc(m)+'</li>').join('')+'</ol>'); }
+
+/* ================= today: "次にすること" ================= */
+const PLAN={l:'本日の予定',v:'10:00 採血 ／ 11:00 内科'};
+const hereLoc=()=>S.visit.loc==='outside'?'entrance':S.visit.loc;
+const memoCard=()=>({l:'先生に聞きたいこと',v:S.memo.length?S.memo.length+'件のメモがあります':'まだありません（書いておけます）'});
+function walkFrom(loc){ return loc==='blood'?'徒歩1分':loc==='internal'?'すぐそこです':'徒歩4分'; }
+function vmWait(){ const v=S.visit,q=v.q,p=predict(); const rb=fmtT(p.rb);
+  if(v.loc==='internal') return {tone:'ok',status:q.early?'順番が早まりました':'内科の待合にいます',dest:'2階 内科の<br>待合で待つ',
+    sub:'呼ばれる目安 <em>'+fmtT(Math.ceil(p.callAt))+'</em>ごろ ／ 呼ばれたら通知します',
+    card:q.stop?memoCard():{l:'まだ時間があります',v:'1階 カフェ・売店に寄れます（徒歩3分）'},
+    cta:q.stop?{label:'聞きたいことを見る',act:'memo'}:{label:'寄れる場所を見る',act:'places'},auto:!q.stop?false:false};
+  if(q.stop) return {tone:'warn',status:q.early?'順番が早まりました':'診察が近づいています',dest:'<em>'+rb+'</em>までに<br>2階 内科へ戻る',
+    sub:walkFrom(v.loc)+' ／ いまいる場所から案内します',card:{l:'立ち寄りの提案を止めました',v:'診察が近づいています',tone:'warn'},
+    cta:{label:'戻る道を案内',act:'nav:internal'},auto:true};
+  const away=v.loc==='cafe'||v.loc==='shop';
+  return {tone:'ok',status:away?'1階 '+PL[v.loc].n+'にいます':'採血が終わりました',dest:'<em>'+rb+'</em>までに<br>2階 内科へ戻る',
+    sub:walkFrom(v.loc)+' ／ 呼ばれたら通知します',
+    card:away?{l:'いまいる場所',v:'1階 '+PL[v.loc].n+'（順番が早まったら通知します）'}:{l:'いま院内で立ち寄れる場所',v:'1階 カフェ（徒歩3分）'},
+    cta:{label:'寄れる場所を見る',act:'places'},auto:!away}; }
+function vm(){ const v=S.visit;
+  switch(v.phase){
+  case 'before': return {tone:'info',status:'本日、内科の予約があります',dest:'受付を済ませる',sub:'病院の外からでも受付できます',card:PLAN,cta:{label:'受付する',act:'checkin'},auto:true};
+  case 'checkedin': return {tone:'ok',status:'受付が完了しました',dest:'病院に着いたら<br>3階 総合受付へ',sub:'保険証（マイナ保険証）の確認があります',card:PLAN,cta:{label:'院内の案内を開始',act:'nav:reception'},auto:true};
+  case 'reception': return v.handed
+    ? {tone:'info',status:'総合受付で確認しています',dest:'そのまま<br>総合受付で待つ',sub:'確認が終わると、次の行き先をお知らせします',card:PLAN,cta:{label:'確認しています',act:null,disabled:true}}
+    : {tone:'ok',status:'総合受付に着きました',dest:'総合受付で<br>保険証を出す',sub:'マイナ保険証でも確認できます',card:PLAN,cta:{label:'保険証を出した',act:'handed'},auto:true};
+  case 'to_blood': return {tone:'ok',status:'保険証の確認が終わりました',dest:'2階 採血室へ',sub:'10:00 の採血 ／ 徒歩3分',card:{l:'このあと',v:'採血 → 11:00 内科'},cta:{label:'案内を開始',act:'nav:blood'},auto:true};
+  case 'blood_scan': return {tone:'ok',status:'採血室に着きました',dest:'受付機に<br>バーコードをかざす',sub:'診察券を通しても受付できます',card:{l:'このあと',v:'採血 → 11:00 内科'},cta:{label:'バーコードを表示',act:'bloodBarcode'},auto:true};
+  case 'blood_wait': return {tone:'ok',status:'採血の受付ができました',dest:'採血室の前で<br>呼ばれるのを待つ',sub:'番号 <em>'+v.blood.no+'</em> ／ 呼ばれたら通知します',card:{l:'このあと',v:'11:00 内科'},cta:{label:'番号を大きく表示',act:'bigBlood'}};
+  case 'blood_called': return {tone:'warn',status:'お呼びしています',dest:'採血室<br>3番の採血台へ',sub:'番号 <em>'+v.blood.no+'</em>',card:{l:'このあと',v:'11:00 内科'},cta:{label:'番号を大きく表示',act:'bigBlood'}};
+  case 'wait_consult': return vmWait();
+  case 'called': return v.loc==='internal'
+    ? {tone:'warn',status:'お呼びしています',dest:'2階 内科<br>3番診察室へ',sub:'診察番号 <em>'+v.consultNo+'</em>',card:memoCard(),cta:{label:'聞きたいことを見る',act:'memo'}}
+    : {tone:'warn',status:'お呼びしています',dest:'2階 内科<br>3番診察室へ',sub:'診察番号 <em>'+v.consultNo+'</em> ／ いまいる場所から案内します',card:{l:'いまいる場所',v:placeLabel(v.loc),tone:'warn'},cta:{label:'案内を開始',act:'nav:internal'},auto:true};
+  case 'in_consult': return {tone:'info',status:'診察中です',dest:'3番診察室で<br>先生と話す',sub:'終わったら、次にすることをお知らせします',card:memoCard(),cta:{label:'聞きたいことを見る',act:'memo'}};
+  case 'after_consult':
+    if(!v.afterpay&&!v.paid) return {tone:'ok',status:'診察が終わりました',dest:'3階 会計へ',sub:'自動支払機で支払います ／ 徒歩3分',card:{l:'お薬の引換番号',v:v.med.no+'（お支払いのあとに受け取ります）'},cta:{label:'案内を開始',act:'nav:pay'},auto:true};
+    return {tone:'ok',status:v.med.ready?'お薬の準備ができました':v.paid?'お支払いが終わりました':'診察が終わりました',dest:'3階 お薬の<br>受取カウンターへ',sub:'お薬引換番号 <em>'+v.med.no+'</em>',
+      card:v.paid?{l:'お支払い',v:'済みました',tone:'ok'}:{l:'会計の列に並ぶ必要はありません',v:'らくらく会計（後払い）で精算します',tone:'ok'},cta:{label:'案内を開始',act:'nav:pharmacy'},auto:true};
+  case 'pay': return {tone:'ok',status:'会計に着きました',dest:'自動支払機で<br>支払う',sub:'バーコードをかざすと、金額が表示されます',card:{l:'お薬の引換番号',v:v.med.no},cta:{label:'バーコードを表示',act:'payBarcode'},auto:true};
+  case 'pharmacy': { const c={l:'お会計',v:v.afterpay?'後払いで精算します（並ぶ必要はありません）':'済んでいます',tone:'ok'};
+    return v.med.ready
+    ? {tone:'ok',status:'お薬の準備ができました',dest:'受取カウンターで<br>受け取る',sub:'番号 <em>'+v.med.no+'</em>',card:c,cta:{label:'受け取った',act:'gotMed'},auto:true}
+    : {tone:'info',status:'お薬を準備しています',dest:'受取カウンターの<br>前で待つ',sub:'番号 <em>'+v.med.no+'</em> ／ 準備ができたら通知します',card:c,cta:{label:'番号を大きく表示',act:'bigMed'}}; }
+  case 'done': return {tone:'ok',status:'今日の通院が終わりました',dest:'次回の通院は<br><em>'+md(NEXT)+'</em>',sub:'<em>10:00</em> 採血から ／ 予約は済んでいます。前日の15時にもお知らせします',card:{l:'今日のまとめ',v:'お薬・次回の予約・分からなかった言葉'},cta:{label:'今日のまとめを見る',act:'summary'}};
   }
+  return {tone:'info',status:'',dest:'',sub:'',cta:{label:'',act:null}}; }
 
-  function render(animate){
-    const s=current();
-    $('clock').textContent=s.time;
-    const icon={ok:ICON_OK,info:ICON_INFO,warn:ICON_WARN}[s.status[0]];
-    const card=s.card?`<div class="card ${s.card.tone||''}"><span class="l">${s.card.l}</span><span class="v">${s.card.v}</span></div>`:'';
-    main.innerHTML=
-      `<div class="statusline ${s.status[0]}">${icon}<span>${s.status[1]}</span></div>
-       <div class="kicker">次にすること</div>
-       <div class="dest">${s.dest}</div>
-       <div class="sub">${s.sub}</div>
-       <div class="grow"></div>${card}
-       <button class="cta" id="cta" type="button">${s.cta.label}</button>`;
-    if(animate){main.classList.remove('enter');void main.offsetWidth;main.classList.add('enter');}
-    $('cta').addEventListener('click',()=>{ s.cta.act==='next' ? go(i+1) : openSheet(s.cta.sheet); });
+let lastVmKey='', lastDest='';
+function renderToday(force){ const m=vm(); const key=JSON.stringify(m); if(!force&&key===lastVmKey) return; lastVmKey=key;
+  const changed=m.dest!==lastDest; lastDest=m.dest;
+  const card=m.card?'<div class="card '+(m.card.tone||'')+'"><span class="l">'+m.card.l+'</span><span class="v">'+m.card.v+'</span></div>':'';
+  const el=$('#v-today');
+  el.innerHTML='<div class="today'+(changed?' enter':'')+'"><div class="dateline">'+md(DAY0)+'の通院</div>'+
+    '<div class="anim"><div class="statusline '+m.tone+'">'+(I[m.tone]||I.info)+'<span>'+m.status+'</span></div>'+
+    '<div class="kicker">次にすること</div><div class="dest">'+m.dest+'</div><div class="sub">'+m.sub+'</div></div>'+
+    '<div class="grow"></div>'+card+
+    '<button class="cta" id="cta" type="button"'+(m.cta.disabled?' disabled':'')+'>'+m.cta.label+'</button>'+
+    '<button class="why" id="why" type="button">この案内のしくみ</button></div>';
+  $('#cta').addEventListener('click',()=>runAct(m.cta.act));
+  $('#why').addEventListener('click',openWhy); }
 
-    $('howText').textContent=s.how;
-    $('howChips').innerHTML=`<span class="chip step">${s.step}</span>`+s.data.map(d=>`<span class="chip">使う情報：${d}</span>`).join('');
-    $('event').hidden=!(scenes[i].early && !early);
+function runAct(a){ if(!a) return;
+  if(a.indexOf('nav:')===0){ startNav(hereLoc(),a.slice(4)); return; }
+  if(ACT[a]) ACT[a](); }
+const ACT={
+  checkin:openCheckin,
+  handed(){ S.visit.handed=true; at(2,'reception_ok'); render(); },
+  bloodBarcode(){ openBarcode('採血の受付','受付機の読み取り口に、画面のバーコードをかざしてください。',{label:'受付機にかざした',fn:()=>{ closeSheet(); bloodRegistered(); }}); },
+  bigBlood(){ showNum('採血の番号',S.visit.blood.no); },
+  bigMed(){ showNum('お薬の引換番号',S.visit.med.no); },
+  places:openPlaces,
+  memo(){ openPage('memo'); },
+  payBarcode(){ openBarcode('自動支払機','読み取り口にバーコードをかざすと、金額が表示されます。',{label:'支払いが終わった',fn:()=>{ closeSheet(); const v=S.visit; v.paid=true; v.phase='after_consult'; v.times.paid=S.t;
+    notify('お支払いが終わりました','3階 お薬の受取カウンターで、番号 '+v.med.no+' をお受け取りください'); render(); }}); },
+  gotMed(){ const v=S.visit; v.phase='done'; v.times.medicine=S.t; v.loc='home'; notify('今日のまとめができました','お薬と次回の予約を確認できます'); render(); },
+  summary(){ openPage('summary'); }
+};
+function doCheckin(){ closeSheet(); const v=S.visit; v.phase='checkedin'; v.times.checkin=S.t;
+  notify('受付が完了しました','病院に着いたら、3階 総合受付へお進みください'); render(); }
+function openCheckin(){ openSheet({title:'どこでも受付',
+  html:'<p class="sp">本日の予約に受付をします。病院の外からでも受付できます。</p>'+
+    '<ul class="items"><li><b>10:00 採血</b><span>2階 採血室</span></li><li><b>11:00 内科 診察</b><span>2階 内科</span></li></ul>'+
+    '<label class="check"><input type="checkbox" id="ckAfterpay"'+(S.visit.afterpay?' checked':'')+'><span><b>会計を後払いにする（らくらく会計）</b><small>登録済みのカードで、後日まとめて精算します。会計の列に並ばずに帰れます（試作品のため架空のカードです）。</small></span></label>',
+  actions:[{label:'受付する',fn:()=>{ S.visit.afterpay=!!($('#ckAfterpay')&&$('#ckAfterpay').checked); doCheckin(); }},{label:'閉じる',cls:'sec',fn:closeSheet}],
+  auto:()=>doCheckin()}); }
+function bloodRegistered(){ const v=S.visit; v.phase='blood_wait'; v.times.bloodReg=S.t; at(5,'blood_call');
+  notify('採血の受付ができました','番号 '+v.blood.no+' ・ 呼ばれたら通知します',{quiet:true}); render(); }
+function openBarcode(title,note,primary){ openSheet({title,
+  html:'<div class="bc">'+barcodeSVG(CARD_NO)+'<div class="bcno">'+CARD_NO+'</div></div><p class="sp">'+note+'</p><p class="note">スマート診察券は、今のアプリにある機能です。診察券を持っていなくても使えます。</p>',
+  actions:[primary,{label:'閉じる',cls:'sec',fn:closeSheet}],auto:primary.fn}); }
+function openPlaces(){ const v=S.visit;
+  const opts=[['cafe','1階 カフェ','徒歩3分'],['shop','1階 売店','徒歩3分'],['internal','2階 内科の待合で待つ',v.loc==='blood'?'徒歩1分':'徒歩4分']].filter(o=>o[0]!==v.loc);
+  openSheet({title:'いま立ち寄れる場所',
+    html:'<p class="sp"><b>'+fmtT(predict().rb)+'</b> までに内科へ戻れば大丈夫です。</p>'+opts.map(o=>'<button class="opt" type="button" data-go="'+o[0]+'"><b>'+o[1]+'</b><span>'+o[2]+'</span></button>').join('')+
+      '<p class="note">順番が早まったときは、すぐに通知でお知らせします。診察が近づくと、立ち寄りの提案は出なくなります。</p>',
+    actions:[{label:'閉じる',cls:'sec',fn:closeSheet}],auto:()=>startNav(hereLoc(),'cafe'),
+    onOpen:b=>$$('.opt',b).forEach(x=>x.addEventListener('click',()=>startNav(hereLoc(),x.dataset.go)))}); }
 
-    [...flow.querySelectorAll('button')].forEach((b,k)=>{
-      b.classList.toggle('done',k<i);
-      if(k===i) b.setAttribute('aria-current','step'); else b.removeAttribute('aria-current');
-    });
-    $('prev').disabled=i===0;
-    $('next').textContent = i===scenes.length-1 ? '最初から' : '次の場面へ';
-  }
+/* route guidance */
+function startNav(from,to){ if(!PL[from]||!PL[to]) return; if(from===to){ toast('いまいる場所です'); return; }
+  nav={from,to,steps:makeRoute(from,to),i:0}; renderNav(); }
+function renderNav(){ if(!nav) return; const n=nav, st=n.steps[n.i], last=n.i===n.steps.length-1, D=PL[n.to];
+  const html='<div class="navprog" aria-hidden="true">'+n.steps.map((_,k)=>'<span class="'+(k<=n.i?'on':'')+'"></span>').join('')+'</div>'+
+    '<div class="mapwrap"><span class="flr">'+st.f+'階</span>'+floorSVG(st.f,st.p,st.f===D.f?n.to:null)+'</div>'+
+    '<div class="navtx"><b>'+st.t+'</b><small>'+st.s+'</small></div>';
+  const next=()=>{ if(!nav) return; nav.i++; renderNav(); };
+  openSheet({title:D.f+'階 '+D.n+'まで',html,kind:'nav',
+    actions:[last?{label:D.n+'に着いた',fn:arrive}:{label:'次へ',fn:next},
+      {label:n.i?'前へ':'閉じる',cls:'sec',fn:()=>{ if(nav&&nav.i){ nav.i--; renderNav(); } else closeSheet(); }}],
+    auto:last?arrive:next}); }
+function arrive(){ if(!nav) return; const n=nav; nav=null; closeSheet(); const v=S.visit, to=n.to;
+  S.t+=n.steps.length+1; v.loc=to;
+  if(to==='reception'&&v.phase==='checkedin'){ v.phase='reception'; v.handed=false; }
+  else if(to==='blood'&&v.phase==='to_blood'){ v.phase='blood_scan'; }
+  else if(to==='internal'&&v.phase==='called'){ at(1,'consult_start'); }
+  else if(to==='pay'&&v.phase==='after_consult'){ v.phase='pay'; }
+  else if(to==='pharmacy'&&v.phase==='after_consult'){ v.phase='pharmacy'; }
+  save(); processEvents(); render(); }
 
-  function showBanner(b){
-    clearTimeout(bannerTimer);
-    $('bannerT').textContent=b[0]; $('bannerB').textContent=b[1];
-    const el=$('banner'); el.classList.add('show');
-    bannerTimer=setTimeout(()=>el.classList.remove('show'),4200);
-  }
-  function hideBanner(){clearTimeout(bannerTimer);$('banner').classList.remove('show');}
+/* "この案内のしくみ" */
+const PINFO={
+ _reg:{label:'利用登録（はじめの1回だけ）',step:-1,data:['登録用のQRコード'],how:'今は登録サポートデスクでの手続きが必要です。KINDAI PASSでは、待合を回る学生サポーターがQRコードを渡し、その場で登録から受付まで体験してもらいます。'},
+ before:{label:'どこでも受付',step:0,data:['本日の予約'],how:'本日の予約があると、病院の外からでも受付できます。受付を押した時点から、この先の案内がすべて動き出します。'},
+ checkedin:{label:'受付直後',step:1,data:['受付の状況','本日の予約'],how:'受付が済むと、院内の案内が始まります。病院に着いたら、行き先までの道順を一つずつ表示します。'},
+ reception:{label:'総合受付',step:1,data:['受付の状況'],how:'総合受付での確認が終わると、病院のシステムから知らせが届き、次の行き先に自動で切り替わります。'},
+ to_blood:{label:'採血室へ',step:2,data:['本日の予約','受付の状況'],how:'検査と診察がある日は、予約から先に行く場所を一つだけ示します。'},
+ blood_scan:{label:'採血の受付',step:2,data:['診察券番号（バーコード）'],how:'スマート診察券は今のアプリにある機能です。受付機にかざすと、採血の番号がこの画面に届きます。'},
+ blood_wait:{label:'採血の順番待ち',step:2,data:['採血の待ち状況'],how:'採血の表示盤と連携し、呼ばれたら通知します。番号を確かめるために画面を開き直す必要はありません。'},
+ blood_called:{label:'採血',step:2,data:['採血の待ち状況'],how:'呼ばれた採血台の番号を示します。採血が終わると、次の案内に自動で切り替わります。'},
+ wait_consult:{label:'診察までの待ち時間',step:3,data:['内科の待ち人数（全体）','平均の診察時間（全体）'],how:'「あと35分」ではなく、戻る時刻で示します。時刻は内科全体の待ち人数と平均の診察時間だけで計算し、個人の情報は使いません。順番が早まれば、すぐに通知で呼び戻し、立ち寄りの提案を止めます。'},
+ called:{label:'呼び出し',step:4,data:['呼び出し','聞きたいことのメモ（端末の中）'],how:'呼び出しは、診察室前の表示盤と連携しています。診察の前に、先生に聞きたいことのメモを見せられます。'},
+ in_consult:{label:'診察中',step:4,data:['診察の状況'],how:'診察が終わると、会計とお薬の情報から、次の行き先が自動で決まります。'},
+ after_consult:{label:'診察後',step:5,data:['会計の方法','お薬の準備状況'],how:'らくらく会計（後払い）を使うと、会計の列に並ばずに、お薬の受け取りへ進めます。お薬の引換番号もこの画面に届きます。'},
+ pay:{label:'会計',step:5,data:['会計の状況','診察券番号（バーコード）'],how:'後払いにしなかった日は、自動支払機でスマート診察券をかざして支払います。'},
+ pharmacy:{label:'お薬の受け取り',step:5,data:['お薬の準備状況'],how:'お薬の表示盤と連携し、準備ができたら通知します。'},
+ done:{label:'帰宅後',step:6,data:['次回の予約','処方（お薬の名前と飲み方）'],how:'今日のまとめは、予約と処方の記録から作ります。生成AIは使いません。分からなかった言葉は、本人が選んだときだけAIで説明できます。'}
+};
+const phaseInfo=()=>S.registered?PINFO[S.visit.phase]:PINFO._reg;
+function openWhy(){ const p=phaseInfo(), v=S.visit; let extra='';
+  if(v.phase==='wait_consult'){ const pr=predict();
+    extra='<div class="group"><div class="irow"><b>内科で、あなたより前の人</b><span>'+v.q.ahead+'人</span></div>'+
+      '<div class="irow"><b>この1時間の平均の診察時間</b><span>約'+Math.round(pr.avg)+'分（内科全体の値）</span></div>'+
+      '<div class="irow"><b>呼ばれる目安</b><span>'+fmtT(Math.ceil(pr.callAt))+'ごろ</span></div>'+
+      '<div class="irow"><b>戻る時刻</b><span>目安の10分前を、5分単位で早めに丸めて '+fmtT(pr.rb)+'</span></div></div>'; }
+  openSheet({title:'この案内のしくみ',
+    html:'<p class="sp">'+p.how+'</p>'+extra+
+      '<div class="group"><div class="irow"><b>使っている情報</b><span>'+p.data.join('・')+'</span></div>'+
+      '<div class="irow"><b>使っていない情報</b><span>位置情報・病名・検査結果・カルテの内容</span></div>'+
+      '<div class="irow"><b>AIに送った情報</b><span>'+(S.aiLog.length?S.aiLog.length+'件（あなたが送ったものだけ。メニューで確認できます）':'ありません')+'</span></div></div>',
+    actions:[{label:'閉じる',cls:'sec',fn:closeSheet}]}); }
 
-  function go(n){
-    if(n>=scenes.length) n=0;
-    if(n<0) n=0;
-    clearTimeout(cafeTimer);
-    closeSheet(); hideBanner();
-    early=false; cafe=false; i=n; render(true);
-    const s=scenes[i];
-    if(s.banner) setTimeout(()=>showBanner(s.banner),350);
-  }
+/* ================= tabs & pages ================= */
+let tab='today', pageStack=[], apptWho='me', mapFloor=3;
+const TABNAME={today:'きょう',appts:'予約',menu:'メニュー'};
+function setTab(t){ tab=t; pageStack=[]; showPage();
+  $$('.view').forEach(v=>{ v.hidden=v.dataset.tab!==t; });
+  $$('.tab').forEach(b=>{ if(b.dataset.tab===t) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
+  lastVmKey=''; renderTab(); }
+$$('.tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+function renderTab(){ if(tab==='today') renderToday(true); else if(tab==='appts') renderAppts(); else renderMenu(); }
+function openPage(name){ pageStack.push(name); showPage(); }
+function showPage(){ const el=$('#page'), name=pageStack[pageStack.length-1];
+  if(!name){ el.classList.remove('show'); el.setAttribute('aria-hidden','true'); return; }
+  const P=PAGES[name]; $('#ptitle').textContent=P.title;
+  $('#pbackLabel').textContent=pageStack.length>1?PAGES[pageStack[pageStack.length-2]].title:TABNAME[tab];
+  const body=$('#pbody'); body.innerHTML=''; P.render(body); body.scrollTop=0;
+  el.classList.add('show'); el.setAttribute('aria-hidden','false'); }
+function closePage(){ pageStack.pop(); showPage(); if(!pageStack.length) renderTab(); }
+$('#pback').addEventListener('click',closePage);
+function refreshPage(){ const name=pageStack[pageStack.length-1]; if(name) { const b=$('#pbody'), st=b.scrollTop; PAGES[name].render(b); b.scrollTop=st; } }
+$('#bellBtn').addEventListener('click',()=>{ closeSheet(); if(pageStack[pageStack.length-1]!=='notes') openPage('notes'); });
 
-  /* Generic bottom sheet: title, inner HTML, and a list of buttons */
-  function openPanel(title,html,actions){
-    $('sheetTitle').textContent=title;
-    $('sheetBody').innerHTML=html;
-    $('sheetBody').scrollTop=0;
-    const acts=$('sheetActions'); acts.innerHTML='';
-    actions.forEach(a=>{
-      const b=document.createElement('button');
-      b.type='button'; b.className=a.cls||'cta'; b.textContent=a.label;
-      b.addEventListener('click',a.fn); acts.appendChild(b);
-    });
-    $('scrim').classList.add('show');$('sheet').classList.add('show');
-    setTimeout(()=>{const f=acts.querySelector('button'); if(f) f.focus({preventScroll:true});},60);
-  }
-  function closeSheet(){$('scrim').classList.remove('show');$('sheet').classList.remove('show');}
+/* 予約 */
+function apptStatus(kind){ const i=pidx(S.visit.phase);
+  if(kind==='blood'){ if(i>=pidx('wait_consult')) return ['終わりました','ok']; if(i>=pidx('blood_wait')) return ['採血の受付済み',''];  if(i>=pidx('checkedin')) return ['受付済み','']; return ['予約',''];}
+  if(i>=pidx('after_consult')) return ['終わりました','ok']; if(i===pidx('in_consult')) return ['診察中','warn']; if(i===pidx('called')) return ['お呼びしています','warn']; if(i>=pidx('checkedin')) return ['受付済み','']; return ['予約','']; }
+function apptBtn(a){ return '<button class="appt" type="button" data-appt="'+a.id+'"><span class="tm">'+a.time+'</span><span><span class="nm">'+a.name+'</span><br><span class="pl">'+a.place+'</span></span>'+(a.st?'<span class="chipst '+a.st[1]+'">'+a.st[0]+'</span>':'')+'</button>'; }
+function apptList(){ if(apptWho==='mom') return {today:[],later:[{id:'m1',date:MOM_NEXT,time:'9:30',name:'整形外科 診察',place:'2階 外来',st:['予約','']}]};
+  const later=S.visit.next?[{id:'n1',date:NEXT,time:'10:00',name:'採血',place:'2階 採血室',st:['新しい予約','warn']},{id:'n2',date:NEXT,time:'11:00',name:'内科 診察',place:'2階 内科',st:['新しい予約','warn']}]:[];
+  return {today:[{id:'t1',date:DAY0,time:'10:00',name:'採血',place:'2階 採血室',st:apptStatus('blood')},{id:'t2',date:DAY0,time:'11:00',name:'内科 診察',place:'2階 内科',st:apptStatus('consult')}],later}; }
+function renderAppts(){ const L=apptList(), el=$('#v-appts');
+  const who=apptWho==='mom'?'近大 花子さん（母）':PATIENT+'さん';
+  let h='<div class="vpad"><div class="vhead"><h2 class="vtitle">予約</h2><button class="who" id="whoBtn" type="button" aria-label="表示する人を切り替える">'+who+I.down+'</button></div>';
+  if(L.today.length) h+='<div class="gtitle">きょう '+md(DAY0)+'</div>'+L.today.map(apptBtn).join('');
+  h+='<div class="gtitle">これから</div>';
+  if(L.later.length){ const d=L.later[0].date; h+='<div class="gtitle" style="margin-top:0">'+md(d)+'</div>'+L.later.map(apptBtn).join(''); }
+  else h+='<div class="group"><div class="empty">次回の予約は、診察のあとにここへ届きます。</div></div>';
+  h+='<p class="note">'+(apptWho==='mom'?'ご家族の予約も、同じように確認できます（今のアプリにある家族登録の機能です）。':'前日の15時に、予約のお知らせが届きます。予約の変更は、診察のときか病院へのお問い合わせで承ります。')+'</p></div>';
+  el.innerHTML=h;
+  $('#whoBtn').addEventListener('click',()=>openSheet({title:'表示する人',html:'<button class="opt" type="button" data-w="me"><b>'+PATIENT+'さん</b><span>ご本人</span></button><button class="opt" type="button" data-w="mom"><b>近大 花子さん</b><span>母</span></button><p class="note">家族の追加には、ご本人の同意が必要です。</p>',actions:[{label:'閉じる',cls:'sec',fn:closeSheet}],
+    onOpen:b=>$$('.opt',b).forEach(x=>x.addEventListener('click',()=>{ apptWho=x.dataset.w; closeSheet(); renderAppts(); }))}));
+  $$('[data-appt]',el).forEach(b=>b.addEventListener('click',()=>{ const a=L.today.concat(L.later).find(x=>x.id===b.dataset.appt); openAppt(a); })); }
+function openAppt(a){ if(!a) return; const isToday=a.date===DAY0;
+  openSheet({title:a.name,html:'<dl class="dl"><dt>日時</dt><dd>'+md(a.date)+' '+a.time+'</dd><dt>場所</dt><dd>'+a.place+'</dd><dt>持ち物</dt><dd>保険証（マイナ保険証）・お薬手帳</dd><dt>受付</dt><dd>'+(isToday?'このアプリの「どこでも受付」で受付できます':'当日、このアプリの「どこでも受付」で受付できます')+'</dd></dl>'+
+    (a.name==='採血'?'<p class="note">採血室の受付機に、スマート診察券のバーコードをかざして受付します。</p>':''),
+    actions:[{label:'閉じる',cls:'sec',fn:closeSheet}]}); }
 
-  function openSheet(key){
-    const d=sheets[key]; if(!d) return;
-    let html='';
-    if(d.type==='route'){
-      html='<ol class="route">'+d.steps.map((st,k)=>`<li class="${k===0?'now':''}"><span class="n">${k+1}</span><span class="tx">${st[0]}<small>${st[1]}</small></span></li>`).join('')+'</ol>';
-    }else if(d.type==='list'){
-      html='<ul class="items">'+d.items.map(it=>`<li><b>${it[0]}</b><span>${it[1]}</span></li>`).join('')+'</ul>';
-    }else if(d.type==='q'){
-      html='<ul class="items q">'+d.items.map(it=>`<li><b>${it[0]}</b><span>${it[1]}</span></li>`).join('')+'</ul>';
-    }else if(d.type==='summary'){
-      html=d.secs.map(sc=>`<div class="sum"><h4>${sc[0]}</h4><p>${sc[1]}</p></div>`).join('');
-    }
-    if(d.note) html+=`<div class="note">${d.note}</div>`;
-    const doneFn = d.act==='cafe' ? goCafe : ()=>go(i+1);
-    openPanel(d.title,html,[
-      {label:d.done,fn:doneFn},
-      {label:'閉じる',cls:'sec-btn',fn:closeSheet}
-    ]);
-  }
+/* メニュー */
+const SIZE_LABEL={normal:'標準',large:'大きめ',xl:'とても大きい'};
+function menuGroups(){ return [
+  ['通院のこと',[['card','スマート診察券','自動支払機・受付機にかざせます',I.card],['board','待ち状況','診察・採血・会計・お薬',I.board],['pay','らくらく会計（後払い）',S.visit.afterpay?'本日の後払い：申請済み':'本日の後払い：申請していません',I.yen],['records','わたしの診療情報','アレルギー・受診歴・処方歴',I.rec],['family','家族','近大 花子さん（母）',I.fam]]],
+  ['病院の案内',[['map','院内マップ','1階〜3階の案内図',I.map],['access','交通・駐車場','バスの時刻・駐車場の混み具合',I.bus]]],
+  ['設定',[['size','文字の大きさ',SIZE_LABEL[S.settings.size],I.txt],['notify','通知','音：'+(S.settings.sound?'オン':'オフ')+' ・ 振動：'+(S.settings.vibrate?'オン':'オフ'),I.bell],['ai','AIと情報の使い方','AIの機能：'+(S.settings.ai?'オン':'オフ'),I.shield]]],
+  ['',[['about','この試作品について','架空の例・最初からやり直す',I.about]]]
+]; }
+function renderMenu(){ const el=$('#v-menu');
+  el.innerHTML='<div class="vpad"><h2 class="vtitle">メニュー</h2>'+menuGroups().map(g=>(g[0]?'<div class="gtitle">'+g[0]+'</div>':'')+'<div class="group">'+g[1].map(r=>'<button class="row" type="button" data-page="'+r[0]+'"><span class="ri">'+r[3]+'</span><span class="rt">'+r[1]+'<small>'+r[2]+'</small></span>'+I.chev+'</button>').join('')+'</div>').join('')+'</div>';
+  $$('[data-page]',el).forEach(b=>b.addEventListener('click',()=>openPage(b.dataset.page))); }
 
-  /* Waiting scene: stop at the cafe, then the turn comes early */
-  function goCafe(){
-    closeSheet(); cafe=true; render(true);
-    clearTimeout(cafeTimer);
-    cafeTimer=setTimeout(triggerEarly,3000);
-  }
+/* ================= pages ================= */
+function pageNotes(el){ S.notes.forEach(n=>n.read=true); save(); updateBadge();
+  el.innerHTML=S.notes.length?'<div class="group">'+S.notes.map(n=>'<div class="irow"><b>'+esc(n.title)+'</b><span>'+esc(n.body)+'</span><span class="src">'+fmtT(n.t)+'</span></div>').join('')+'</div>':'<div class="group"><div class="empty">お知らせはまだありません。</div></div>'; }
+function pageCard(el){ el.innerHTML='<div class="mcard"><div class="mt"><span class="mb">KINDAI PASS</span><span class="mk">試作品</span></div><div><div class="mk">診察券</div><div class="mn">'+PATIENT+' さん</div></div></div>'+
+  '<div class="bc">'+barcodeSVG(CARD_NO)+'<div class="bcno">'+CARD_NO+'</div></div>'+
+  '<p class="note">自動支払機や採血の受付機の読み取り口にかざして使えます。診察券を持っていなくても大丈夫です（今のアプリにある機能です）。番号は架空です。</p>'; }
+function boardRows(){ const v=S.visit,t=S.t,i=pidx(v.phase); const base=(k,a)=>Math.max(1,Math.round(k+a*Math.sin(t/9+k)));
+  const rows=[];
+  let ib, isub='', me=false;
+  if(v.phase==='wait_consult'){ ib=(v.consultNo-v.q.ahead)+'番'; isub='いま診察中の番号 ／ あなたは '+v.consultNo+'番（前に'+v.q.ahead+'人）'; me=true; }
+  else if(v.phase==='called'||v.phase==='in_consult'){ ib=v.consultNo+'番'; isub='あなたの番号です'; me=true; }
+  else { ib=base(9,2)+'人'; isub='内科で待っている人'; }
+  rows.push(['診察（内科）',ib,isub,me]);
+  let bb, bs, bme=false;
+  if(v.phase==='blood_wait'){ const ev=S.events.find(e=>e.type==='blood_call'); const n=ev?Math.max(1,Math.ceil((ev.at-t)/1.5)):1; bb=n+'人'; bs='あなた（'+v.blood.no+'）より前の人'; bme=true; }
+  else if(v.phase==='blood_called'){ bb=v.blood.no; bs='あなたの番号を呼んでいます'; bme=true; }
+  else { bb=base(12,4)+'人'; bs='採血を待っている人'; }
+  rows.push(['採血',bb,bs,bme]);
+  rows.push(['会計',base(7,3)+'人','計算・自動支払機を待っている人',false]);
+  const ready=['A-118','A-119','A-121']; let ps='準備ができた番号（一部）'; let pme=false;
+  if(i>=pidx('after_consult')&&i<pidx('done')){ ps=v.med.ready?'あなたの番号 '+v.med.no+' の準備ができました':'あなたの番号 '+v.med.no+' を準備しています'; pme=true; if(v.med.ready) ready.push(v.med.no); }
+  rows.push(['お薬',ready.slice(-3).join(' '),ps,pme]);
+  return rows; }
+function pageBoard(el){ el.innerHTML='<p class="ptext">病院の表示盤と同じ内容です。自動で新しくなるので、更新の操作は要りません。</p><div class="group">'+
+  boardRows().map(r=>'<div class="bd'+(r[3]?' me':'')+'"><span class="bk">'+r[0]+'</span><span class="bv">'+r[1]+'</span><span class="bs">'+r[2]+'</span></div>').join('')+'</div>'+
+  '<p class="src">'+fmtT(S.t)+' 時点 ・ 試作品のため架空の値です</p>'; }
+function pagePay(el){ const v=S.visit, can=pidx(v.phase)<pidx('after_consult');
+  el.innerHTML='<p class="ptext">登録したクレジットカードで、診療費を後日まとめて支払えます。診察のあと、会計の列に並ばずに帰れます（今のアプリにある機能です）。</p>'+
+   '<div class="group"><div class="irow"><b>クレジットカード</b><span>登録済み（試作品のため架空のカードです）</span></div>'+
+   '<label class="trow"><span><b>本日の後払い</b><small>'+(can?'診察が終わる前まで変えられます':'診察が終わったため、変えられません')+'</small></span><input type="checkbox" role="switch" id="payToggle"'+(v.afterpay?' checked':'')+(can?'':' disabled')+'></label></div>';
+  const tg=$('#payToggle',el); tg.addEventListener('change',()=>{ v.afterpay=tg.checked; save(); toast(tg.checked?'本日の後払いを申請しました':'本日の後払いを取り消しました'); render(); }); }
+function pageRecords(el){ const d=k=>md(addDays(DAY0,-28*k)); const done=pidx(S.visit.phase)>=pidx('after_consult');
+  el.innerHTML='<div class="gtitle">アレルギー</div><div class="group"><div class="empty">登録されているアレルギーはありません。</div></div>'+
+   '<div class="gtitle">受診歴</div><div class="group">'+(done?'<div class="irow"><b>'+md(DAY0)+'</b><span>内科（きょう）</span></div>':'')+[1,2,3].map(k=>'<div class="irow"><b>'+d(k)+'</b><span>内科</span></div>').join('')+'</div>'+
+   '<div class="gtitle">処方歴</div><div class="group">'+(done?'<div class="irow"><b>'+md(DAY0)+'</b><span>アムロジピン錠5mg ・ 1日1回 朝食後 ・ 28日分</span></div>':'')+[1,2].map(k=>'<div class="irow"><b>'+d(k)+'</b><span>アムロジピン錠5mg ・ 1日1回 朝食後 ・ 28日分</span></div>').join('')+'</div>'+
+   '<p class="note">電子カルテに記録された内容を表示します（今のアプリにある機能です）。ここに出ている内容はすべて架空の例です。</p>'; }
+function pageFamily(el){ el.innerHTML='<div class="group"><div class="irow"><b>近大 花子さん（母）</b><span>次の予約：'+md(MOM_NEXT)+' 9:30 整形外科</span></div>'+
+   '<label class="trow"><span><b>見守りのお知らせ</b><small>受付・呼び出し・お薬の準備をこのスマホにも届けます</small></span><input type="checkbox" role="switch" id="momToggle"'+(S.settings.watchMom?' checked':'')+'></label></div>'+
+   '<p class="note">1台のスマホで、ご家族の予約も確認できます（今のアプリにある機能です）。家族の追加には、ご本人の同意が必要です。</p>';
+  $('#momToggle',el).addEventListener('change',e=>{ S.settings.watchMom=e.target.checked; save(); }); }
+function pageMap(el){ const names={1:'カフェ・売店・正面玄関',2:'採血室・内科',3:'総合受付・会計・お薬の受取'};
+  el.innerHTML='<div class="seg2" role="group" aria-label="階を選ぶ">'+[1,2,3].map(f=>'<button type="button" data-f="'+f+'" aria-pressed="'+(mapFloor===f)+'">'+f+'階</button>').join('')+'</div>'+
+   '<div class="mapwrap"><span class="flr">'+mapFloor+'階</span>'+floorSVG(mapFloor,null,null)+'</div><p class="ptext">'+names[mapFloor]+'</p>'+
+   '<p class="note">試作品のため、院内の配置は架空の例です。実際の案内図とは異なります。</p>';
+  $$('[data-f]',el).forEach(b=>b.addEventListener('click',()=>{ mapFloor=+b.dataset.f; pageMap(el); })); }
+function pageAccess(el){ const t=Math.max(S.t,START); const first=Math.ceil((t+1)/12)*12; const deps=[0,1,2,3].map(k=>first+12*k);
+  const park=Math.max(20,Math.round(140-60*Math.sin(t/40)));
+  el.innerHTML='<div class="gtitle">病院前 → 駅（バス）</div><div class="group">'+deps.map(m=>'<div class="bus"><b>'+fmtT(m)+'</b><span>'+(m-t<=12?'まもなく ・ ':'')+'駅まで約10分</span></div>').join('')+'</div>'+
+   '<div class="gtitle">駐車場</div><div class="group"><div class="irow"><b>空きあり</b><span>あと約'+park+'台</span></div></div>'+
+   '<p class="note">今のアプリにある「時刻表・駐車場の状況」を表示する画面です。試作品のため、時刻と台数は架空の値です。</p>'; }
+function pageSize(el){ el.innerHTML='<p class="ptext">このアプリ全体の文字の大きさを変えます。</p>'+['normal','large','xl'].map(k=>'<button class="sz" type="button" data-sz="'+k+'" aria-pressed="'+(S.settings.size===k)+'"><span class="r"></span><span><b style="font-size:'+({normal:15,large:17,xl:19}[k])+'px">'+SIZE_LABEL[k]+'</b><br><span style="font-size:'+({normal:13,large:14.5,xl:16.5}[k])+'px;color:var(--app-muted)">10:30までに 2階 内科へ戻る</span></span></button>').join('');
+  $$('[data-sz]',el).forEach(b=>b.addEventListener('click',()=>{ S.settings.size=b.dataset.sz; save(); applySize(); pageSize(el); })); }
+function pageNotify(el){ el.innerHTML='<div class="group"><label class="trow"><span><b>音</b><small>短いチャイムが鳴ります</small></span><input type="checkbox" role="switch" id="ntSound"'+(S.settings.sound?' checked':'')+'></label>'+
+   '<label class="trow"><span><b>振動</b><small>対応しているスマホのみ</small></span><input type="checkbox" role="switch" id="ntVib"'+(S.settings.vibrate?' checked':'')+'></label></div>'+
+   '<div class="gtitle">お知らせすること</div><div class="group"><div class="irow"><span>受付の完了 ・ 次の行き先 ・ 順番が早まったとき ・ 呼び出し ・ お薬の準備 ・ 前日の予約のお知らせ（15時）</span></div></div>'+
+   '<button class="btn2" type="button" id="ntTest">'+I.bell+'試しに通知を鳴らす</button>';
+  $('#ntSound',el).addEventListener('change',e=>{ S.settings.sound=e.target.checked; save(); });
+  $('#ntVib',el).addEventListener('change',e=>{ S.settings.vibrate=e.target.checked; save(); });
+  $('#ntTest',el).addEventListener('click',()=>notify('お知らせの例','このように画面の上にお知らせが出ます')); }
+function pageAI(el){
+  el.innerHTML='<p class="ptext"><b>KINDAI PASSは、AIを使わなくてもすべての案内が動きます。</b></p>'+
+   '<div class="gtitle">AIを使わない機能（いつも動きます）</div><div class="group">'+
+   '<div class="irow"><b>次にすること</b><span>病院の予約・受付・待ち状況から決まります。</span></div>'+
+   '<div class="irow"><b>戻る時刻</b><span>内科全体の待ち人数と平均の診察時間だけで計算します。病名や検査結果など、あなた個人の情報は使いません。</span></div>'+
+   '<div class="irow"><b>院内の案内</b><span>位置情報は使いません。選んだ行き先までの道順を表示します。</span></div>'+
+   '<div class="irow"><b>今日のまとめ</b><span>予約と処方の記録から作ります。</span></div></div>'+
+   '<div class="gtitle">AIを使う機能（使うと決めたときだけ）</div><div class="group">'+
+   '<label class="trow"><span><b>AIの機能を使う</b><small>聞きたいことの整理・ことばの説明</small></span><input type="checkbox" role="switch" id="aiToggle"'+(S.settings.ai?' checked':'')+'></label>'+
+   '<div class="irow"><b>AIに送るもの</b><span>あなたが入力した文章だけ。使うたびに送ります。</span></div>'+
+   '<div class="irow"><b>送らないもの</b><span>お名前・診察券番号・病名・検査結果・カルテ・位置情報</span></div></div>'+
+   '<div class="gtitle">AIに送った内容の記録</div><div class="group">'+(S.aiLog.length?S.aiLog.map(a=>'<div class="irow"><b>'+esc(a.what)+'</b><span>'+esc(a.text)+'</span><span class="src">'+fmtT(a.t)+'</span></div>').join(''):'<div class="empty">まだ何も送っていません。</div>')+'</div>'+
+   (S.aiLog.length?'<button class="btn2" type="button" id="aiClear">記録を消す</button>':'')+
+   '<p class="note">'+aiModeNote()+'</p>';
+  $('#aiToggle',el).addEventListener('change',e=>{ S.settings.ai=e.target.checked; save(); toast(e.target.checked?'AIの機能をオンにしました':'AIの機能をオフにしました'); renderPanel(); });
+  const c=$('#aiClear',el); if(c) c.addEventListener('click',()=>{ S.aiLog=[]; save(); pageAI(el); renderPanel(); toast('記録を消しました'); }); }
+function pageAbout(el){
+  el.innerHTML='<p class="ptext">近畿大学病院「通院支援アプリ アイデアコンテスト2026」で提案した <b>KINDAI PASS</b> の試作品です。</p>'+
+   '<div class="group"><div class="irow"><b>病院のシステムとはつながっていません</b><span>予約・番号・時刻・院内の配置・お薬などは、すべて架空の例です。</span></div>'+
+   '<div class="irow"><b>病院側の動きは、この中で再現しています</b><span>総合受付の確認・採血の呼び出し・診察の順番・お薬の準備などが、実際のアプリと同じように通知で届きます。待ち時間は速く進めています。</span></div>'+
+   '<div class="irow"><b>今のアプリにある機能</b><span>予約の確認・どこでも受付・スマート診察券・待ち状況・らくらく会計・家族・診療情報・院内マップ・交通</span></div>'+
+   '<div class="irow"><b>KINDAI PASSで加える機能</b><span>次にすること・戻る時刻・院内の案内・お薬の引換番号・聞きたいことのメモ・今日のまとめ・ことばの説明</span></div></div>'+
+   '<button class="btn2" type="button" id="abGuide">試作品の操作を開く</button>'+
+   '<button class="btn2" type="button" id="abVisit">通院の最初に戻る</button>'+
+   '<button class="btn2" type="button" id="abAll">登録からやり直す</button>';
+  $('#abGuide',el).addEventListener('click',openGuideSheet);
+  $('#abVisit',el).addEventListener('click',resetVisit);
+  $('#abAll',el).addEventListener('click',resetAll); }
 
-  function triggerEarly(){
-    if(!scenes[i].early || early) return;
-    clearTimeout(cafeTimer);
-    closeSheet(); early=true; render(true);
-    showBanner(scenes[i].early.banner);
-  }
+/* 先生に聞きたいこと */
+function pageMemo(el){
+  el.innerHTML='<p class="ptext">診察の前に、先生に伝えたいこと・聞きたいことを書いておけます。メモはこのスマホの中だけに保存されます。</p>'+
+   '<div class="group">'+(S.memo.length?S.memo.map((m,k)=>'<div class="mrow"><span>'+esc(m)+'</span><button class="xbtn" type="button" data-del="'+k+'" aria-label="このメモを消す">'+I.x+'</button></div>').join(''):'<div class="empty">まだありません。</div>')+'</div>'+
+   '<div class="addrow"><input type="text" id="memoIn" maxlength="80" autocomplete="off" placeholder="例：薬を飲み忘れたときはどうするか" aria-label="聞きたいことを書く"><button class="btn-s" type="button" id="memoAdd">追加</button></div>'+
+   '<button class="cta" type="button" id="memoShow"'+(S.memo.length?'':' disabled')+'>先生に見せる</button>'+
+   '<button class="btn2" type="button" id="memoAI"'+(S.memo.length?'':' disabled')+'>'+I.spark+'AIで短く整理する（使うときだけ）</button>'+
+   '<div id="memoOut"></div>'+
+   '<p class="note">AIで整理するときだけ、ここに書いた文章をAIに送ります。お名前や病名、検査結果は送りません。</p>';
+  $$('[data-del]',el).forEach(b=>b.addEventListener('click',()=>{ S.memo.splice(+b.dataset.del,1); save(); pageMemo(el); lastVmKey=''; }));
+  const add=()=>{ const i=$('#memoIn',el); const t=(i.value||'').trim(); if(!t) return; S.memo.push(t.slice(0,80)); save(); pageMemo(el); lastVmKey=''; const ni=$('#memoIn',el); if(ni) ni.focus(); };
+  $('#memoAdd',el).addEventListener('click',add);
+  $('#memoIn',el).addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.isComposing){ e.preventDefault(); add(); } });
+  $('#memoShow',el).addEventListener('click',showMemoBig);
+  $('#memoAI',el).addEventListener('click',organizeMemo); }
 
-  /* Phone-only menu: what this screen does, jump to a scene, notes */
-  function openMenu(){
-    const s=current();
-    let html=`<p class="lbl">この画面のしくみ</p><p class="how-m">${s.how}</p>
-      <div class="chips-m"><span class="step">${s.step}</span>${s.data.map(d=>`<span>使う情報：${d}</span>`).join('')}</div>`;
-    const acts=[];
-    html+=`<p class="lbl" style="margin-top:6px">場面を選ぶ</p><ul class="jump">`+
-      scenes.map((sc,k)=>`<li><button type="button" data-k="${k}"${k===i?' aria-current="step"':''}><b>${k+1}</b>${sc.nav}</button></li>`).join('')+'</ul>';
-    if(scenes[i].early && !early) acts.push({label:'順番が早まったら？',cls:'warn-btn',fn:triggerEarly});
-    html+=`<div class="note">近畿大学病院「通院支援アプリ アイデアコンテスト2026」の提案 KINDAI PASS の試作品です。画面に出てくる場所・時刻・番号・診察の内容はすべて架空の例で、実際の病院の案内とは異なります。</div>`;
-    acts.push({label:'閉じる',cls:'sec-btn',fn:closeSheet});
-    openPanel('試作品メニュー',html,acts);
-    $('sheetBody').querySelectorAll('.jump button').forEach(b=>b.addEventListener('click',()=>go(+b.dataset.k)));
-  }
+/* 今日のまとめ */
+function pageSummary(el){ const v=S.visit, T=v.times;
+  if(pidx(v.phase)<pidx('after_consult')){ el.innerHTML='<div class="group"><div class="empty">診察が終わると、ここに今日のまとめができます。</div></div>'; return; }
+  const tl=[['受付',T.checkin],['保険証の確認',T.reception],['採血',T.bloodCall],['診察',T.consultStart],['お薬の受け取り',T.medicine]].filter(x=>x[1]!=null);
+  el.innerHTML=
+   '<div class="gtitle">今日の通院 '+md(DAY0)+'</div><div class="group pad"><ul class="tl">'+tl.map(x=>'<li><b>'+fmtT(x[1])+'</b><span>'+x[0]+'</span></li>').join('')+'</ul></div>'+
+   '<div class="gtitle">今日のお薬</div><div class="group pad"><div class="med"><b>アムロジピン錠5mg</b><span>1日1回 朝食後 ・ 28日分</span><span>血圧を下げるお薬です</span></div><div class="medrow"><span class="chipst ok">前回と同じお薬です</span></div></div>'+
+   '<div class="gtitle">お会計</div><div class="group"><div class="irow"><b>'+(v.afterpay?'らくらく会計（後払い）':'お支払い済み')+'</b><span>'+(v.afterpay?'登録したカードで後日まとめて精算します。金額は精算後にお知らせします。':'自動支払機でお支払いいただきました。')+'</span></div></div>'+
+   '<div class="gtitle">次回の予約</div><div class="group"><div class="irow"><b>'+md(NEXT)+'</b><span>10:00 採血（2階 採血室） → 11:00 内科（2階 内科）</span></div></div>'+
+   '<div class="gtitle">分からなかった言葉を調べる</div><div class="group pad" style="display:flex;flex-direction:column;gap:10px">'+
+     '<div class="addrow"><input type="text" id="termIn" maxlength="40" autocomplete="off" placeholder="例：HbA1c" aria-label="調べたい言葉"><button class="btn-s" type="button" id="termGo">調べる</button></div>'+
+     '<div class="chips2">'+['HbA1c','降圧薬','食後','頓服','eGFR'].map(t=>'<button class="chipb" type="button" data-term="'+t+'">'+t+'</button>').join('')+'</div>'+
+     '<div class="termout" id="termOut" hidden></div></div>'+
+   '<p class="note">このまとめは、予約と処方の記録から作っています。生成AIは使っていません。内容は、主治医の説明が優先です。</p>';
+  const go=t=>explainTerm(t);
+  $('#termGo',el).addEventListener('click',()=>go($('#termIn',el).value));
+  $('#termIn',el).addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.isComposing){ e.preventDefault(); go(e.target.value); } });
+  $$('[data-term]',el).forEach(b=>b.addEventListener('click',()=>{ $('#termIn',el).value=b.dataset.term; go(b.dataset.term); })); }
+const PAGES={
+  notes:{title:'お知らせ',render:pageNotes}, card:{title:'スマート診察券',render:pageCard}, board:{title:'待ち状況',render:pageBoard,live:true},
+  pay:{title:'らくらく会計（後払い）',render:pagePay}, records:{title:'わたしの診療情報',render:pageRecords}, family:{title:'家族',render:pageFamily},
+  map:{title:'院内マップ',render:pageMap}, access:{title:'交通・駐車場',render:pageAccess,live:true}, size:{title:'文字の大きさ',render:pageSize},
+  notify:{title:'通知',render:pageNotify}, ai:{title:'AIと情報の使い方',render:pageAI}, about:{title:'この試作品について',render:pageAbout},
+  memo:{title:'先生に聞きたいこと',render:pageMemo}, summary:{title:'今日のまとめ',render:pageSummary}
+};
 
-  function openWelcome(){
-    openPanel('KINDAI PASS 試作品',
-      `<p class="welcome-lead">受付から帰宅後まで、画面に出るのは「次にすること」一つだけ。通院支援アプリの提案を、実際に触って確かめられる試作品です。</p>
-       <ol class="welcome-steps"><li>画面下の青いボタンを押して進みます</li><li>案内が出たら、その行動をしたつもりでボタンを押します</li><li>右上の「試作品メニュー」から、場面の移動や仕組みの説明を見られます</li></ol>
-       <div class="note">場所・時刻・番号・診察の内容はすべて架空の例です。</div>`,
-      [{label:'体験をはじめる',fn:closeSheet}]);
-  }
+/* ================= AI (only when the person chooses) ================= */
+let sampleFn=null, aiLive=false;
+async function initAI(){ try{ if(window.claude&&typeof window.claude.use==='function'){ const s=await window.claude.use('sample'); if(s){ sampleFn=s; aiLive=true; renderPanel(); } } }catch(e){} }
+const NO_SEND=['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed','invalid_request','cancelled'];
+function aiModeNote(){ return aiLive
+  ? '試作品では、AIの処理に外部の生成AI（Claude）を使っています。実際に病院で使うときは、病院が認めた環境で動かします。'
+  : 'この表示ではAIにつながらないため、試作品では端末の中だけの簡易処理で代わりに動きます。外部には何も送りません。'; }
+function logAI(what,text){ S.aiLog.unshift({t:S.t,what,text:String(text).slice(0,200)}); S.aiLog=S.aiLog.slice(0,30); save(); renderPanel(); }
+function ensureAIConsent(){ if(S.settings.ai) return Promise.resolve(true);
+  return new Promise(res=>{ let done=false; const fin=x=>{ if(done) return; done=true; res(x); };
+    openSheet({title:'AIを使いますか？',kind:'consent',
+      html:'<p class="sp">AIを使うのは、あなたが選んだこの操作のときだけです。使わなくても、ほかの案内はすべて動きます。</p>'+
+        '<div class="group"><div class="irow"><b>AIに送るもの</b><span>いま入力した文章だけ</span></div><div class="irow"><b>送らないもの</b><span>お名前・診察券番号・病名・検査結果・カルテ・位置情報</span></div><div class="irow"><b>あとから</b><span>送った内容は記録に残り、いつでも消せます。メニューの「AIと情報の使い方」でオフにできます。</span></div></div>'+
+        '<p class="note">'+aiModeNote()+'</p>',
+      actions:[{label:'同意して使う',fn:()=>{ S.settings.ai=true; save(); fin(true); closeSheet(); renderPanel(); }},{label:'使わない',cls:'sec',fn:()=>{ fin(false); closeSheet(); }}],
+      onClose:()=>fin(false)}); }); }
+function localOrganize(items){ const tell=[],ask=[],seen=new Set();
+  items.forEach(raw=>String(raw).split(/[。\n]/).forEach(s=>{ s=s.trim().replace(/[、。\s]+$/,''); if(!s||seen.has(s)) return; seen.add(s);
+    const q=/[?？]$|か$|いつ|どう|何|なぜ|どれ|どのくらい|ですか|ますか|でしょうか/.test(s); const t=s.length>30?s.slice(0,29)+'…':s; (q?ask:tell).push(t); }));
+  return {tell,ask}; }
+async function organizeMemo(){ if(!S.memo.length) return; const ok=await ensureAIConsent(); if(!ok) return;
+  const out=$('#memoOut'); if(!out) return; out.innerHTML='<div class="thinking">整理しています</div>';
+  const text=S.memo.join('\n'); let res=null, mode='local';
+  if(aiLive&&sampleFn){ try{
+      const r=await sampleFn.json('あなたは病院の通院支援アプリの「聞きたいことの整理」機能です。患者さんが、診察の前に先生へ伝えたいこと・聞きたいことをメモしました。次のルールで整理してください。\n・診断、助言、推測はしない。メモにないことは足さない。\n・同じ内容はまとめる。\n・「先生に伝えたいこと」と「先生に聞きたいこと」に分ける。\n・1件30字以内の、先生にそのまま見せられる短い文にする。\n返答はJSONだけにしてください。形式：{"tell":["..."],"ask":["..."]}\n\nメモ：\n'+text,{modelTier:'quick'});
+      const arr=a=>Array.isArray(a)?a.map(x=>String(x).trim()).filter(Boolean).slice(0,8):[];
+      if(r&&(arr(r.tell).length||arr(r.ask).length)){ res={tell:arr(r.tell),ask:arr(r.ask)}; mode='live'; }
+      logAI('聞きたいことの整理',text);
+    }catch(e){ const c=e&&e.code; if(!NO_SEND.includes(c)) logAI('聞きたいことの整理',text); if(['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed'].includes(c)) aiLive=false; } }
+  if(!res) res=localOrganize(S.memo);
+  const o=$('#memoOut'); if(!o) return;
+  const sec=(t,a)=>a.length?'<div class="og"><h4>'+t+'</h4><ul>'+a.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>':'';
+  o.innerHTML='<div class="orgbox">'+sec('先生に伝えたいこと',res.tell)+sec('先生に聞きたいこと',res.ask)+
+    '<p class="note">'+(mode==='live'?'AIが整理しました。内容を確かめてからお使いください。':'この表示ではAIにつながらないため、端末の中だけの簡易処理で整理しました。外部には送っていません。')+'</p>'+
+    '<button class="btn2" type="button" id="orgApply">この内容でメモを置きかえる</button></div>';
+  $('#orgApply').addEventListener('click',()=>{ S.memo=res.tell.concat(res.ask).slice(0,10); save(); lastVmKey=''; refreshPage(); toast('メモを置きかえました'); }); }
 
-  flow.innerHTML=scenes.map((s,k)=>`<li><button type="button" data-k="${k}"><span class="no">${k+1}</span><span class="tm">${s.time}</span><span class="lb">${s.nav}</span></button></li>`).join('');
-  flow.addEventListener('click',e=>{const b=e.target.closest('button'); if(b) go(+b.dataset.k);});
-  $('prev').addEventListener('click',()=>go(i-1));
-  $('next').addEventListener('click',()=>go(i+1));
-  $('event').addEventListener('click',triggerEarly);
-  $('menuBtn').addEventListener('click',openMenu);
-  $('scrim').addEventListener('click',closeSheet);
-  document.addEventListener('keydown',e=>{
-    if(e.target.closest('input,textarea')) return;
-    if(e.key==='ArrowRight'){go(i+1);}
-    else if(e.key==='ArrowLeft'){go(i-1);}
-    else if(e.key==='Escape'){closeSheet();}
-  });
+const GLOSSARY=[
+ [['hba1c','ヘモグロビンa1c','ヘモグロビンエーワンシー'],'HbA1c（ヘモグロビン・エーワンシー）','過去1〜2か月の血糖（血液中の糖）の平均的な状態を表す、血液検査の値です。糖尿病かどうかを調べるときや、治療の効果を確かめるときに使われます。'],
+ [['egfr','推算糸球体ろ過量'],'eGFR（推算糸球体ろ過量）','腎臓が血液をろ過して、いらないものを尿に出す力の目安です。血液検査のクレアチニンの値と、年齢・性別から計算します。値が低いほど、腎臓の働きが弱っていることを表します。'],
+ [['ldl','ldlコレステロール','悪玉コレステロール'],'LDLコレステロール','血液中のコレステロールの一つで、「悪玉コレステロール」とも呼ばれます。増えすぎると血管の壁にたまり、動脈硬化の原因になります。'],
+ [['hdl','hdlコレステロール','善玉コレステロール'],'HDLコレステロール','血管などにたまった余分なコレステロールを回収する働きがあり、「善玉コレステロール」とも呼ばれます。'],
+ [['中性脂肪','トリグリセライド'],'中性脂肪','体のエネルギー源になる脂肪です。食べすぎや飲みすぎで増え、多すぎると動脈硬化などの原因になります。'],
+ [['収縮期血圧','上の血圧','最高血圧'],'収縮期血圧（上の血圧）','心臓が縮んで、血液を全身に送り出すときの血圧です。'],
+ [['拡張期血圧','下の血圧','最低血圧'],'拡張期血圧（下の血圧）','心臓が広がって、血液が心臓に戻ってくるときの血圧です。'],
+ [['経過観察'],'経過観察','すぐに治療を始めたり変えたりせず、決めた間隔で診察や検査をして、様子を見ることです。'],
+ [['頓服','とんぷく','頓用'],'頓服（とんぷく）','毎日決まった時間に飲むのではなく、痛みや発熱など、症状が出たときに飲むお薬のことです。'],
+ [['食後','しょくご'],'食後','食事のあと、おおむね30分以内にお薬を飲むことです。'],
+ [['食前','しょくぜん'],'食前','食事の前、おおむね30分前までにお薬を飲むことです。'],
+ [['食間','しょっかん'],'食間','食事と食事のあいだ、おおむね食事の2時間後にお薬を飲むことです。食事の最中という意味ではありません。'],
+ [['降圧薬','降圧剤'],'降圧薬（こうあつやく）','血圧を下げるお薬のことです。'],
+ [['ジェネリック','ジェネリック医薬品','後発医薬品'],'ジェネリック医薬品','先に発売されたお薬（先発医薬品）の特許が切れたあとに作られる、同じ有効成分のお薬です。一般に、値段が安くなります。'],
+ [['crp','c反応性たんぱく','c反応性蛋白'],'CRP','体のどこかで炎症が起きているときに、血液中で増えるたんぱく質です。炎症の強さの目安になります。'],
+ [['副作用'],'副作用','お薬の、本来の目的とは別にあらわれる好ましくない作用のことです。気になる変化があっても自己判断でやめずに、医師や薬剤師に相談してください。'],
+ [['処方箋','処方せん'],'処方箋（しょほうせん）','医師が、出すお薬の種類・量・飲み方を書いた書類です。'],
+ [['空腹時血糖','空腹時血糖値'],'空腹時血糖','前の晩から10時間以上、何も食べていない状態で測った血糖値です。'],
+ [['アムロジピン'],'アムロジピン','血圧を下げるお薬（カルシウム拮抗薬）の一つです。血管を広げることで、血圧を下げます。']
+];
+const norm=s=>String(s).normalize('NFKC').toLowerCase().replace(/\s+/g,'');
+function lookup(term){ const n=norm(term); if(!n) return null; return GLOSSARY.find(g=>g[0].some(k=>norm(k)===n))||null; }
+function termActions(term){ return '<button class="btn2" type="button" id="termMemo">次回の「聞きたいこと」に入れる</button>'; }
+function bindTermMemo(term){ const b=$('#termMemo'); if(b) b.addEventListener('click',()=>{ S.memo.push('「'+term+'」について聞きたい'); save(); toast('次回の「聞きたいこと」に入れました'); b.disabled=true; }); }
+async function explainTerm(raw){ const term=String(raw||'').trim().slice(0,40); const out=$('#termOut'); if(!term||!out) return; out.hidden=false;
+  const g=lookup(term);
+  if(g){ out.innerHTML='<h4>'+esc(g[1])+'</h4><p>'+esc(g[2])+'</p><p class="src">アプリの用語辞書から表示しました（AIは使っていません）。詳しくは主治医や薬剤師にご確認ください。</p>'+termActions(term); bindTermMemo(term); return; }
+  out.innerHTML='<p>「'+esc(term)+'」は、アプリの用語辞書にありませんでした。</p><button class="btn2" type="button" id="termAI">'+I.spark+'AIに聞く（使うときだけ）</button>'+termActions(term);
+  bindTermMemo(term);
+  $('#termAI').addEventListener('click',async()=>{ const ok=await ensureAIConsent(); if(!ok) return; const o=$('#termOut'); if(!o) return;
+    if(!(aiLive&&sampleFn)){ o.innerHTML='<p>この表示ではAIにつながらないため、試作品では説明を出せません。次回の「聞きたいこと」に入れておくと、診察で先生に確認できます。</p>'+termActions(term); bindTermMemo(term); return; }
+    o.innerHTML='<h4>'+esc(term)+'</h4><p id="termAns" class="thinking">考えています</p>';
+    try{ const r=await sampleFn('あなたは病院の通院支援アプリの「ことばの説明」機能です。患者さんが、診察やお薬の説明で分からなかった言葉を入力しました。次のルールで答えてください。\n・その言葉の一般的な意味だけを、やさしい日本語で3文以内で説明する。\n・診断、治療の判断、お薬の飲み方の指示はしない。この患者さんの体の状態には触れない。\n・医療や健康と関係のない言葉、または意味が分からない言葉なら「この言葉は説明できません。」とだけ答える。\n・最後に「詳しくは主治医や薬剤師にご確認ください。」と書く。\n・見出し、箇条書き、記号での強調は使わない。\n\n言葉：'+term,
+        {modelTier:'quick',onText:({text})=>{ const a=$('#termAns'); if(a){ a.classList.remove('thinking'); a.textContent=text; } }});
+      logAI('ことばの説明',term);
+      const a=$('#termAns'); if(a){ a.classList.remove('thinking'); a.textContent=r.text; }
+      const o2=$('#termOut'); if(o2){ o2.insertAdjacentHTML('beforeend','<p class="src">AIが一般的な意味を説明しました。あなたの体の状態についての説明ではありません。</p>'+termActions(term)); bindTermMemo(term); }
+    }catch(e){ const c=e&&e.code; if(!NO_SEND.includes(c)) logAI('ことばの説明',term);
+      if(['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed'].includes(c)) aiLive=false;
+      const a=$('#termAns'); if(a){ a.classList.remove('thinking'); a.textContent=c==='rate_limited'?'いま混み合っています。少し時間をおいてお試しください。':c==='refused'?'この言葉は説明できません。':'AIにつながりませんでした。次回の「聞きたいこと」に入れておくと、診察で確認できます。'; } } }); }
 
-  render(false);
-  if(isPhone()) setTimeout(openWelcome,250);
+/* ================= first-run registration ================= */
+let onbStep=0, scanned=false;
+function renderOnb(){ const o=$('#onb'); if(S.registered){ o.hidden=true; return; } o.hidden=false; let h='';
+  if(onbStep===0) h='<div class="ostep center"><div class="omark" style="text-align:center">KINDAI PASS</div><h2 class="wel">通院の「次にすること」を<br>ひとつずつお知らせします</h2><p class="op">受付から帰宅まで、画面に出るのは次にすること一つだけ。覚えることはありません。</p><div class="onote">試作品です。表示はすべて架空の例で、病院のシステムとはつながっていません。</div></div><div class="oacts"><button class="cta" type="button" id="onbGo">利用登録をはじめる</button></div>';
+  else if(onbStep===1) h='<div class="ostep"><div class="ostepno">利用登録 1/3</div><h2>登録用のQRコードを<br>読み取ります</h2><p class="op">病院でお渡しする登録用のQRコードです。待合を回っている学生サポーターも、登録をお手伝いします（土曜も）。</p>'+
+    '<div class="vf'+(scanned?' done':'')+'" id="vf" aria-hidden="true"><div class="qr">'+qrSVG()+'</div><span class="scan"></span><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i></div>'+
+    '<div class="scanres" id="scanres"'+(scanned?'':' hidden')+'>'+I.ok+'<span>読み取りました：'+PATIENT+' さん</span></div><p class="vfcap" id="vfcap"'+(scanned?' hidden':'')+'>試作品のため、カメラは使わずに読み取った扱いにします</p></div>'+
+    '<div class="oacts"><button class="cta" type="button" id="onbScan"'+(scanned?' disabled':'')+'>QRコードを読み取る</button><button class="btn2" type="button" id="onbNoQR">QRコードをお持ちでない方</button></div>';
+  else if(onbStep===2) h='<div class="ostep"><div class="ostepno">利用登録 2/3</div><h2>情報の使い方</h2><ul class="olist">'+
+    '<li>'+I.ok+'<span>予約・受付・待ち状況など、<b>病院の情報</b>をこのアプリに表示します。</span></li>'+
+    '<li>'+I.ok+'<span><b>位置情報は使いません。</b>院内の案内は、選んだ行き先から表示します。</span></li>'+
+    '<li>'+I.ok+'<span><b>AIの機能は、あなたが使うと決めたときだけ</b>動きます。初めはオフです。</span></li></ul>'+
+    '<label class="check"><input type="checkbox" id="onbAgree"><span><b>利用規約と情報の使い方に同意します</b><small>試作品のため、利用規約の本文は省いています</small></span></label></div>'+
+    '<div class="oacts"><button class="cta" type="button" id="onbNext" disabled>同意して次へ</button></div>';
+  else if(onbStep===3) h='<div class="ostep"><div class="ostepno">利用登録 3/3</div><h2>呼び出しを、<br>音と振動でお知らせします</h2><p class="op">順番が早まったとき、呼ばれたとき、お薬の準備ができたときにお知らせします。画面を開き直す必要はありません。</p>'+
+    '<div class="group"><label class="trow"><span><b>音</b><small>短いチャイムが鳴ります</small></span><input type="checkbox" role="switch" id="onbSound"'+(S.settings.sound?' checked':'')+'></label><label class="trow"><span><b>振動</b><small>対応しているスマホのみ</small></span><input type="checkbox" role="switch" id="onbVib"'+(S.settings.vibrate?' checked':'')+'></label></div></div>'+
+    '<div class="oacts"><button class="cta" type="button" id="onbNext">登録を終える</button></div>';
+  else { const sec=Math.max(1,Math.round(((S.regEnd||Date.now())-(S.regStart||Date.now()))/1000));
+    h='<div class="ostep center"><div class="bigok">'+I.ok+'</div><h2>登録が終わりました</h2><p class="op">かかった時間は <b>'+sec+'秒</b> でした。<br>さっそく、きょうの受付をしてみましょう。</p></div><div class="oacts"><button class="cta" type="button" id="onbDone">はじめる</button></div>'; }
+  o.innerHTML=h;
+  const b=id=>$('#'+id,o);
+  if(b('onbGo')) b('onbGo').addEventListener('click',()=>{ S.regStart=Date.now(); onbStep=1; scanned=false; renderOnb(); renderPanel(); });
+  if(b('onbScan')) b('onbScan').addEventListener('click',()=>{ const vf=b('vf'); vf.classList.add('scanning'); b('onbScan').disabled=true;
+    setTimeout(()=>{ scanned=true; vf.classList.remove('scanning'); vf.classList.add('done'); b('scanres').hidden=false; b('vfcap').hidden=true; setTimeout(()=>{ onbStep=2; renderOnb(); },900); },1300); });
+  if(b('onbNoQR')) b('onbNoQR').addEventListener('click',()=>openSheet({title:'QRコードをお持ちでない方',html:'<p class="sp">登録には、病院でお渡しする登録用のQRコードが必要です。総合受付の近くの登録サポート、または待合を回っている学生サポーターに声をかけてください。土曜も登録できます。</p><p class="note">今は平日の登録サポートデスクでの手続きが必要です。学生サポーターの巡回と土曜の登録は、KINDAI PASSで提案している仕組みです。</p>',actions:[{label:'閉じる',cls:'sec',fn:closeSheet}]}));
+  if(b('onbAgree')) b('onbAgree').addEventListener('change',e=>{ b('onbNext').disabled=!e.target.checked; });
+  if(onbStep===2&&b('onbNext')) b('onbNext').addEventListener('click',()=>{ onbStep=3; renderOnb(); });
+  if(onbStep===3&&b('onbNext')) b('onbNext').addEventListener('click',()=>{ S.settings.sound=b('onbSound').checked; S.settings.vibrate=b('onbVib').checked; S.regEnd=Date.now(); onbStep=4; renderOnb(); });
+  if(b('onbDone')) b('onbDone').addEventListener('click',finishOnb);
+  if(onbStep>0){ const f=o.querySelector('.cta:not([disabled])'); if(f) setTimeout(()=>f.focus({preventScroll:true}),60); } }
+function finishOnb(){ S.registered=true; S.t=START; S.events=[]; S.visit=freshVisit();
+  S.notes=[{id:'reg',t:START,title:'登録が完了しました',body:'KINDAI PASS をご利用いただけます',read:false}];
+  save(); $('#onb').hidden=true; setTab('today'); render(); const c=$('#cta'); if(c){ c.classList.add('pulse'); c.focus({preventScroll:true}); } }
+
+/* ================= prototype guide (panel on a computer, sheet on a phone) ================= */
+const STEPS=['どこでも受付','総合受付','採血','待ち時間','診察','会計・お薬','帰宅後'];
+function guideBlocks(){ const p=phaseInfo(), v=S.visit; const showEarly=S.registered&&v.phase==='wait_consult'&&!v.q.early;
+  return '<section class="box"><h2 class="bh">いまの画面</h2><div class="ph">'+esc(p.label)+'</div><p class="how">'+esc(p.how)+'</p><div class="chips">'+p.data.map(d=>'<span class="chip">使う情報：'+esc(d)+'</span>').join('')+'</div></section>'+
+   '<section class="box"><h2 class="bh">試作品の操作</h2>'+
+     '<div class="ctrl"><span class="lbl">待ち時間の進み方</span><div class="seg" role="group" aria-label="待ち時間の進み方">'+[1,20,60].map(x=>'<button type="button" data-g="speed" data-v="'+x+'" aria-pressed="'+(S.speed===x)+'">'+(x===1?'実際の速さ':x+'倍')+'</button>').join('')+'</div></div>'+
+     '<div class="gbtns"><button class="gbtn primary" type="button" data-g="skip">次の出来事まで進める</button>'+(showEarly?'<button class="gbtn event" type="button" data-g="early">順番が早まる出来事を起こす</button>':'')+
+     '<button class="gbtn" type="button" data-g="auto" aria-pressed="'+S.auto+'">'+(S.auto?'おまかせを止める':'おまかせで進める')+'</button></div>'+
+     '<div class="gbtns small"><button class="gbtn" type="button" data-g="resetVisit">通院の最初に戻る</button><button class="gbtn" type="button" data-g="resetAll">登録からやり直す</button></div>'+
+     '<p class="fine2">院内の時刻 <b class="simclock">'+fmtT(S.t)+'</b>。病院からの知らせを待つあいだだけ、時刻を速く進めています。</p></section>'+
+   '<section class="box"><h2 class="bh">個人の情報とAIの扱い</h2><ul class="plist">'+
+     '<li><b>戻る時刻の予測</b><span>内科全体の待ち人数と平均の診察時間だけで計算します。個人の情報は使いません。</span></li>'+
+     '<li><b>位置情報</b><span>使いません。院内の案内は、選んだ行き先から表示します。</span></li>'+
+     '<li><b>生成AI</b><span>初めはオフです。本人が使うと決めたときだけ、入力した文章だけを送ります。送った内容は記録に残り、消せます。</span></li></ul>'+
+     '<div class="aistat">AIの機能：<b>'+(S.settings.ai?'オン':'オフ')+'</b> ・ AIに送った情報：<b>'+(S.aiLog.length?S.aiLog.length+'件（本人が送ったもの）':'なし')+'</b></div></section>'+
+   '<section class="box"><h2 class="bh">通院の流れ</h2><ol class="flow">'+STEPS.map((s,k)=>'<li class="'+(k<p.step?'done ':'')+(k===p.step?'now':'')+'"><span class="no">'+(k+1)+'</span><span>'+s+'</span></li>').join('')+'</ol></section>'; }
+function renderPanel(){ const g=$('#guide'); if(g) g.innerHTML=guideBlocks();
+  if(sheetState&&sheetState.kind==='guide'){ const b=$('#sheetBody'); if(b) b.innerHTML='<div class="guide gsheet">'+guideBlocks()+'</div>'; } }
+function openGuideSheet(){ openSheet({title:'試作品メニュー',kind:'guide',html:'<div class="guide gsheet">'+guideBlocks()+'</div><p class="note">近畿大学病院「通院支援アプリ アイデアコンテスト2026」の提案 KINDAI PASS の試作品です。予約・番号・時刻・院内の配置・お薬などは、すべて架空の例です。</p>',actions:[{label:'閉じる',cls:'sec',fn:closeSheet}]}); }
+$('#protoBtn').addEventListener('click',openGuideSheet);
+document.addEventListener('click',e=>{ const b=e.target.closest('[data-g]'); if(!b) return; const g=b.dataset.g;
+  if(g==='speed'){ S.speed=+b.dataset.v; save(); renderPanel(); }
+  else if(g==='skip') skipToNext();
+  else if(g==='early'){ cancel('q_early'); HANDLERS.q_early(); save(); render(); }
+  else if(g==='auto'){ if(!S.registered){ toast('先に利用登録をしてください'); return; } S.auto=!S.auto; autoLast=0; save(); renderPanel(); if(S.auto){ closeSheet(); toast('画面の操作を自動で進めます'); } }
+  else if(g==='resetVisit') resetVisit();
+  else if(g==='resetAll') resetAll(); });
+function skipToNext(){ if(!S.registered){ toast('先に利用登録をしてください'); return; }
+  if(!S.events.length){ toast('いまは、画面の青いボタンで進みます'); return; }
+  S.t=Math.max(S.t,S.events[0].at); processEvents(); render(); }
+function resetVisit(){ closeSheet(); S.t=START; S.visit=freshVisit(); S.events=[]; S.auto=false;
+  S.notes=S.notes.filter(n=>n.id==='reg'); save(); setTab('today'); render(); toast('通院の最初に戻りました'); }
+function resetAll(){ closeSheet(); const keep={size:S.settings.size}; S=freshState(); S.settings.size=keep.size; save(); onbStep=0; scanned=false; pageStack=[]; showPage(); setTab('today'); renderOnb(); render(); }
+
+/* ================= render & clock ================= */
+function applySize(){ $('#screen').dataset.size=S.settings.size; }
+function render(){ applySize(); if(tab==='today') renderToday(false); else if(tab==='appts') renderAppts(); else renderMenu();
+  renderPanel(); updateBadge(); const top=pageStack[pageStack.length-1]; if(top&&PAGES[top].live) refreshPage(); }
+let lastReal=performance.now(), lastMin=-1, autoLast=0;
+function maybeAuto(){ if(!S.auto||!S.registered) return; const now=performance.now(); if(now-autoLast<2400) return; autoLast=now;
+  if(!$('#big').hidden){ $('#big').hidden=true; return; }
+  if(sheetOpen()){ if(sheetState&&sheetState.auto) sheetState.auto(); else closeSheet(); return; }
+  if(pageStack.length){ pageStack=[]; showPage(); renderTab(); return; }
+  if(tab!=='today'){ setTab('today'); return; }
+  if(S.visit.phase==='done'){ S.auto=false; save(); renderPanel(); toast('最後まで進みました'); return; }
+  const m=vm(); if(m.auto&&m.cta.act&&!m.cta.disabled) runAct(m.cta.act); }
+setInterval(()=>{ const now=performance.now(); const dt=Math.min(5,(now-lastReal)/1000); lastReal=now;
+  if(document.hidden||!S.registered) return;
+  const rate=S.events.length?S.speed:1; S.t=Math.min(23*60,S.t+dt*rate/60);
+  processEvents(); checkStop();
+  const m=Math.floor(S.t+1e-6); if(m!==lastMin){ lastMin=m; $$('.simclock').forEach(e=>e.textContent=fmtT(S.t)); if(tab==='today') renderToday(false);
+    const top=pageStack[pageStack.length-1]; if(top&&PAGES[top].live) refreshPage();
+    if(m%5===0) save(); }
+  maybeAuto(); },250);
+document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return; if(!$('#big').hidden){ $('#big').hidden=true; return; } if(sheetOpen()){ closeSheet(); return; } if(pageStack.length) closePage(); });
+
+/* start */
+$$('.simclock').forEach(e=>e.textContent=fmtT(S.t));
+setTab('today'); renderOnb(); render(); initAI();
 })();
 </script>
-
 </body>
 </html>
